@@ -136,6 +136,9 @@ jobs:
             -e SC4S_DEBUG_CONTAINER="yes" \
             ssc:test
 
+          # Workaround: https://github.com/yaml/pyyaml/issues/724#issuecomment-1723271472
+          pip3 install wheel -v
+          pip3 install "cython<3.0.0" pyyaml==5.4.1 --no-build-isolation -v
           pip3 install poetry
           poetry install
           poetry run pytest -v -n8 --splunk_type=external --splunk_hec_token=70b6ae71-76b3-4c38-9597-0c5b37ad9630 \

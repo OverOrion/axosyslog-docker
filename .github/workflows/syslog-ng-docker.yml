@@ -20,7 +20,6 @@ env:
 jobs:
   docker:
     name: syslog-ng Docker
-    if: github.repository_owner == 'axoflow'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout source

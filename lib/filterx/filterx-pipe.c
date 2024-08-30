@@ -75,6 +75,8 @@ log_filterx_pipe_queue(LogPipe *s, LogMessage *msg, const LogPathOptions *path_o
   switch (res)
     {
     case FXE_SUCCESS:
+    /* FALLTHROUGH */
+    case FXE_NEXT:
       log_pipe_forward_msg(s, msg, path_options);
       break;
 

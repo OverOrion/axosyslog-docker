@@ -46,6 +46,7 @@ set(FILTERX_HEADERS
     filterx/func-str-transform.h
     filterx/func-flatten.h
     filterx/expr-drop.h
+    filterx/expr-done.h
     filterx/expr-plus.h
     filterx/expr-null-coalesce.h
     filterx/expr-plus-generator.h
@@ -100,6 +101,7 @@ set(FILTERX_SOURCES
     filterx/func-str-transform.c
     filterx/func-flatten.c
     filterx/expr-drop.c
+    filterx/expr-done.c
     filterx/expr-plus.c
     filterx/filterx-private.c
     filterx/expr-null-coalesce.c

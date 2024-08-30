@@ -88,6 +88,8 @@ _eval_exprs(FilterXCompoundExpr *self, FilterXObject **result)
 
       if (context->error.error_type == FXE_DROP)
         return TRUE;
+      if (context->error.error_type == FXE_NEXT)
+        return TRUE;
 
       FilterXExpr *expr = g_ptr_array_index(self->exprs, i);
       if (!_eval_expr(expr, result))

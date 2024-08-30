@@ -202,6 +202,9 @@ filterx_format_eval_result(FilterXEvalResult result)
     case FXE_DROP:
       eval_result = g_strdup("Explicitly dropped");
       break;
+    case FXE_NEXT:
+      eval_result = g_strdup("Continuation requested, forwarding");
+      break;
     case FXE_FAILURE:
       eval_result = g_strdup("Failed to match, dropping");
       break;

@@ -33,6 +33,7 @@ typedef enum _FilterXEvalResult
   FXE_SUCCESS,
   FXE_FAILURE,
   FXE_DROP,
+  FXE_NEXT,
 } FilterXEvalResult;
 
 typedef struct _FilterXError

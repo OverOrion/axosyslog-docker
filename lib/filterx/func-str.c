@@ -94,5 +94,19 @@ filterx_simple_function_startswith(FilterXExpr *s, GPtrArray *args)
 FilterXObject*
 filterx_simple_function_endswith(FilterXExpr *s, GPtrArray *args)
 {
-    return filterx_boolean_new(TRUE);
+  gssize haystack_len;
+  const gchar *haystack = _extract_haystack_arg(s, args, &haystack_len);
+  if (!haystack)
+    return NULL;
+  gssize needle_len;
+  const gchar *needle = _extract_needle_arg(s, args &needle_len);
+  if (!needle)
+    return NULL;
+  if (needle_len > haystack_len)
+    return filterx_boolean_new(FALSE);
+  for(gssize i = needle_len; i > 0; i--)
+    if (haystack[i] != needle[i])
+        return filterx_boolean_new(FALSE);
+
+  return filterx_boolean_new(TRUE);
 }

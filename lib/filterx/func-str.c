@@ -25,9 +25,69 @@
 #include "filterx/func-str.h"
 #include "filterx/object-primitive.h"
 
+static const gchar *
+_extract_haystack_arg(FilterXExpr *s, GPtrArray *args, gssize *len)
+{
+  if (args == NULL || args->len != 2)
+    {
+      filterx_simple_function_argument_error(s, "Requires exactly two arguments", FALSE);
+      return NULL;
+    }
+
+  const gchar *str;
+  gsize inner_len;
+  FilterXObject *object = g_ptr_array_index(args, 0);
+
+  if (!filterx_object_extract_string(object, &str, &inner_len))
+    {
+      filterx_simple_function_argument_error(s, "Object must be string", FALSE);
+      return NULL;
+    }
+
+  *len = (gssize) MIN(inner_len, G_MAXINT64);
+  return str;
+}
+
+static const gchar *
+_extract_needle_arg(FilterXExpr *s, GPtrArray *args, gssize *len)
+{
+  if (args == NULL || args->len != 2)
+    {
+      filterx_simple_function_argument_error(s, "Requires exactly two arguments", FALSE);
+      return NULL;
+    }
+
+  const gchar *str;
+  gsize inner_len;
+  FilterXObject *object = g_ptr_array_index(args, 1);
+
+  if (!filterx_object_extract_string(object, &str, &inner_len))
+    {
+      filterx_simple_function_argument_error(s, "Object must be string", FALSE);
+      return NULL;
+    }
+
+  *len = (gssize) MIN(inner_len, G_MAXINT64);
+  return str;
+}
+
 FilterXObject*
 filterx_simple_function_startswith(FilterXExpr *s, GPtrArray *args)
 {
+  gssize haystack_len;
+  const gchar *haystack = _extract_haystack_arg(s, args, &haystack_len);
+  if (!haystack)
+    return NULL;
+  gssize needle_len;
+  const gchar *needle = _extract_needle_arg(s, args &needle_len);
+  if (!needle)
+    return NULL;
+  if (needle_len > haystack_len)
+    return filterx_boolean_new(FALSE);
+  for(gssize i = 0; i < needle_len; i++)
+    if (haystack[i] != needle[i])
+        return filterx_boolean_new(FALSE);
+
   return filterx_boolean_new(TRUE);
 }
 

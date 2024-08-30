@@ -104,9 +104,9 @@ filterx_simple_function_endswith(FilterXExpr *s, GPtrArray *args)
     return NULL;
   if (needle_len > haystack_len)
     return filterx_boolean_new(FALSE);
-  for(gssize i = 0; i > needle_len; i++)
-    if (haystack[haystack_len - needle_len + i] != needle[i])
-        return filterx_boolean_new(FALSE);
 
-  return filterx_boolean_new(TRUE);
+ if (memcmp(haystack + haystack_len - needle_len, needle, needle_len) == 0)
+    return filterx_boolean_new(TRUE);
+
+  return filterx_boolean_new(FALSE);
 }

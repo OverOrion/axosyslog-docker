@@ -61,6 +61,7 @@ filterx_eval_clear_error(FilterXError *error)
   if (error->free_info)
     g_free(error->info);
   memset(error, 0, sizeof(*error));
+  error->error_type = FXE_SUCCESS;
 }
 
 void
@@ -188,12 +189,38 @@ filterx_eval_store_weak_ref(FilterXObject *object)
     }
 }
 
-gboolean
+EVTTAG *
+filterx_format_eval_result(FilterXEvalResult result)
+{
+  const gchar *eval_result = NULL;
+
+  switch (result)
+    {
+    case FXE_SUCCESS:
+      eval_result = g_strdup("Succesfully matched, forwarding");
+      break;
+    case FXE_DROP:
+      eval_result = g_strdup("Explicitly dropped");
+      break;
+    case FXE_FAILURE:
+      eval_result = g_strdup("Failed to match, dropping");
+      break;
+
+    default:
+      g_assert_not_reached();
+      break;
+    }
+
+  return evt_tag_printf("eval result", "%s", eval_result);
+
+}
+
+FilterXEvalResult
 filterx_eval_exec(FilterXEvalContext *context, FilterXExpr *expr, LogMessage *msg)
 {
   context->msgs = &msg;
   context->num_msg = 1;
-  gboolean success = FALSE;
+  FilterXEvalResult eval_result = FXE_FAILURE;
 
   FilterXObject *res = filterx_expr_eval(expr);
   if (!res)
@@ -204,12 +231,16 @@ filterx_eval_exec(FilterXEvalContext *context, FilterXExpr *expr, LogMessage *ms
       filterx_eval_clear_errors();
       goto fail;
     }
-  success = filterx_object_truthy(res);
+  if (context->error.error_type != FXE_SUCCESS)
+    eval_result = context->error.error_type;
+  else if (filterx_object_truthy(res))
+    eval_result = FXE_SUCCESS;
+
   filterx_object_unref(res);
   /* NOTE: we only store the results into the message if the entire evaluation was successful */
 fail:
   filterx_scope_set_dirty(context->scope);
-  return success;
+  return eval_result;
 }
 
 void

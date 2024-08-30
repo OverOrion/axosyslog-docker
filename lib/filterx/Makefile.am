@@ -47,6 +47,7 @@ filterxinclude_HEADERS = 			\
 	lib/filterx/func-unset-empties.h		\
 	lib/filterx/func-str-transform.h		\
 	lib/filterx/func-flatten.h		\
+	lib/filterx/expr-drop.h		\
 	lib/filterx/filterx-private.h			\
 	lib/filterx/expr-null-coalesce.h	\
 	lib/filterx/expr-plus-generator.h
@@ -100,6 +101,7 @@ filterx_sources = 				\
 	lib/filterx/func-unset-empties.c		\
 	lib/filterx/func-str-transform.c		\
 	lib/filterx/func-flatten.c		\
+	lib/filterx/expr-drop.c		\
 	lib/filterx/filterx-private.c	\
 	lib/filterx/expr-null-coalesce.c	\
 	lib/filterx/expr-plus-generator.c	\

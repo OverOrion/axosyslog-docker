@@ -49,6 +49,7 @@ static CfgLexerKeyword filterx_keywords[] =
   { "elif",               KW_ELIF },
 
   { "isset",              KW_ISSET },
+  { "drop",               KW_DROP },
   { "declare",            KW_DECLARE },
 
   { CFG_KEYWORD_STOP },

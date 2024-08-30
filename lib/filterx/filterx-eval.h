@@ -27,6 +27,14 @@
 #include "filterx/filterx-expr.h"
 #include "template/eval.h"
 
+/* TODO: move this information into FilterXError as error_type */
+typedef enum _FilterXEvalResult
+{
+  FXE_SUCCESS,
+  FXE_FAILURE,
+  FXE_DROP,
+} FilterXEvalResult;
+
 typedef struct _FilterXError
 {
   const gchar *message;
@@ -34,6 +42,7 @@ typedef struct _FilterXError
   FilterXObject *object;
   gchar *info;
   gboolean free_info;
+  FilterXEvalResult error_type;
 } FilterXError;
 
 typedef struct _FilterXEvalContext FilterXEvalContext;
@@ -53,12 +62,14 @@ FilterXScope *filterx_eval_get_scope(void);
 void filterx_eval_push_error(const gchar *message, FilterXExpr *expr, FilterXObject *object);
 void filterx_eval_push_error_info(const gchar *message, FilterXExpr *expr, gchar *info, gboolean free_info);
 void filterx_eval_set_context(FilterXEvalContext *context);
-gboolean filterx_eval_exec(FilterXEvalContext *context, FilterXExpr *expr, LogMessage *msg);
+FilterXEvalResult filterx_eval_exec(FilterXEvalContext *context, FilterXExpr *expr, LogMessage *msg);
 void filterx_eval_sync_scope_and_message(FilterXScope *scope, LogMessage *msg);
 const gchar *filterx_eval_get_last_error(void);
 EVTTAG *filterx_format_last_error(void);
 EVTTAG *filterx_format_last_error_location(void);
 void filterx_eval_clear_errors(void);
+
+EVTTAG *filterx_format_eval_result(FilterXEvalResult result);
 
 void filterx_eval_store_weak_ref(FilterXObject *object);
 

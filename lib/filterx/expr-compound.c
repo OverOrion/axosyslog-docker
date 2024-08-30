@@ -84,6 +84,10 @@ _eval_exprs(FilterXCompoundExpr *self, FilterXObject **result)
   for (gint i = 0; i < self->exprs->len; i++)
     {
       filterx_object_unref(*result);
+      FilterXEvalContext *context = filterx_eval_get_context();
+
+      if (context->error.error_type == FXE_DROP)
+        return TRUE;
 
       FilterXExpr *expr = g_ptr_array_index(self->exprs, i);
       if (!_eval_expr(expr, result))

@@ -39,6 +39,7 @@
 #include "filterx/expr-regexp.h"
 #include "filterx/expr-unset.h"
 #include "filterx/filterx-eval.h"
+#include "filterx/expr-drop.h"
 
 static GHashTable *filterx_builtin_simple_functions = NULL;
 static GHashTable *filterx_builtin_function_ctors = NULL;

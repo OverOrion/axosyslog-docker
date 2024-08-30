@@ -84,11 +84,11 @@ filterx_simple_function_startswith(FilterXExpr *s, GPtrArray *args)
     return NULL;
   if (needle_len > haystack_len)
     return filterx_boolean_new(FALSE);
-  for(gssize i = 0; i < needle_len; i++)
-    if (haystack[i] != needle[i])
-        return filterx_boolean_new(FALSE);
 
-  return filterx_boolean_new(TRUE);
+ if (memcmp(haystack, needle, needle_len) == 0)
+    return filterx_boolean_new(TRUE);
+
+  return filterx_boolean_new(FALSE);
 }
 
 FilterXObject*

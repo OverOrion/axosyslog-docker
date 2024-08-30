@@ -79,7 +79,7 @@ filterx_simple_function_startswith(FilterXExpr *s, GPtrArray *args)
   if (!haystack)
     return NULL;
   gssize needle_len;
-  const gchar *needle = _extract_needle_arg(s, args &needle_len);
+  const gchar *needle = _extract_needle_arg(s, args, &needle_len);
   if (!needle)
     return NULL;
   if (needle_len > haystack_len)

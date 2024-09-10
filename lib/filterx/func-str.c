@@ -33,7 +33,7 @@
 
 
 #define FILTERX_FUNC_STARTSWITH_USAGE "Usage: startswith(my_string, my_prefix)"
-#define FILTERX_FUNC_ENDSWITH_USAGE "Usage: endswith(my_string, my_prefix)"
+#define FILTERX_FUNC_ENDSWITH_USAGE "Usage: endswith(my_string, my_suffix)"
 
 static FilterXExpr *
 _extract_haystack_arg(FilterXFunctionArgs *args, GError **error, const gchar *function_usage)

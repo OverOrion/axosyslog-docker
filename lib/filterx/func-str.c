@@ -35,6 +35,32 @@
 #define FILTERX_FUNC_STARTSWITH_USAGE "Usage: startswith(my_string, my_prefix)"
 #define FILTERX_FUNC_ENDSWITH_USAGE "Usage: endswith(my_string, my_suffix)"
 
+typedef struct FilterXAffixState_
+{
+  FilterXObject *str_obj;
+  struct
+  {
+    const gchar *borrowed_value;
+    gchar *owned_value;
+  } str;
+  gsize str_len;
+} FilterXAffixState;
+
+static void
+_state_init(FilterXAffixState *state)
+{
+  memset(state, 0, sizeof(FilterXAffixState));
+}
+
+static void
+_state_cleanup(FilterXAffixState *state)
+{
+  filterx_object_unref(state->str_obj);
+  if (state->str.owned_value)
+    g_free(state->str.owned_value);
+  _state_init(state);
+}
+
 static FilterXExpr *
 _extract_haystack_arg(FilterXFunctionArgs *args, GError **error, const gchar *function_usage)
 {
@@ -76,7 +102,10 @@ _extract_needle_arg(FilterXExprOrLiteral *needle, gboolean ignore_case, FilterXF
   gsize needle_str_len;
   const gchar *needle_str = filterx_function_args_get_literal_string(args, 1, &needle_str_len);
   if (!needle_str)
-    return FALSE;
+    {
+      g_set_error(error, FILTERX_FUNCTION_ERROR, FILTERX_FUNCTION_ERROR_CTOR_FAIL, "failed to extract string from needle");
+      return FALSE;
+    }
 
   if (ignore_case)
     {
@@ -111,32 +140,32 @@ _extract_optional_args(gboolean *ignore_case, FilterXFunctionArgs *args, GError 
 }
 
 static gboolean
-_eval_needle_expr(FilterXExpr *needle_expr, gboolean ignorecase, gchar **needle_str, gsize *needle_len)
+_eval_needle_expr(FilterXExpr *needle_expr, gboolean ignorecase, FilterXAffixState *state)
 {
-  FilterXObject *needle_obj = filterx_expr_eval_typed(needle_expr);
-  if (!needle_obj)
+  state->str_obj = filterx_expr_eval_typed(needle_expr);
+  if (!state->str_obj)
     {
       filterx_eval_push_error_info("failed to evaluate needle", needle_expr,
                                    g_strdup_printf("invalid expression"), TRUE);
       return FALSE;
     }
-  const gchar *needle_str_res;
-  if (!filterx_object_extract_string(needle_obj, &needle_str_res, needle_len))
+
+  if (!filterx_object_extract_string(state->str_obj, &state->str.borrowed_value, &state->str_len))
     {
       filterx_eval_push_error_info("failed to extract needle, it must be a string", needle_expr,
-                                   g_strdup_printf("got %s instead", needle_obj->type->name), TRUE);
-      filterx_object_unref(needle_obj);
-      return FALSE;
+                                   g_strdup_printf("got %s instead", state->str_obj->type->name), TRUE);
+      goto error;
     }
-  if (!ignorecase)
-    *needle_str = g_strdup(needle_str_res);
-  else
+  if (ignorecase)
     {
-      *needle_str = g_utf8_casefold(needle_str_res, *needle_len);
-      *needle_len = g_utf8_strlen(*needle_str, -1);
+      state->str.owned_value = g_utf8_casefold(state->str.borrowed_value, state->str_len);
+      state->str_len = g_utf8_strlen(state->str.owned_value, -1);
     }
-  filterx_object_unref(needle_obj);
   return TRUE;
+
+error:
+  _state_cleanup(state);
+  return FALSE;
 }
 
 static gboolean
@@ -181,27 +210,32 @@ _filterx_function_startswith_eval(FilterXExpr *s)
   gchar *haystack_str;
   if(!_eval_haystack_expr(self->haystack, self->ignore_case, &haystack_str, &haystack_len))
     return NULL;
-  gsize needle_len;
-  gchar *needle_str;
+
+  FilterXObject *result = NULL;
+  FilterXAffixState needle_state;
+  _state_init(&needle_state);
+
   if(!self->needle.expr)
     {
-      needle_str = self->needle.literal.str;
-      needle_len = self->needle.literal.str_len;
+      needle_state.str.borrowed_value = self->needle.literal.str;
+      needle_state.str_len = self->needle.literal.str_len;
     }
-  else if (!_eval_needle_expr(self->needle.expr, self->ignore_case, &needle_str, &needle_len))
-    return NULL;
-  gboolean startswith = FALSE;
-  if (needle_len > haystack_len)
+  else if (!_eval_needle_expr(self->needle.expr, self->ignore_case, &needle_state))
     goto exit;
+  if (needle_state.str_len > haystack_len)
+    {
+      result = filterx_boolean_new(FALSE);
+    }
 
-  if (memcmp(haystack_str, needle_str, needle_len) == 0)
-    startswith = TRUE;
+  const gchar *needle_str_value = needle_state.str.owned_value != NULL ? needle_state.str.owned_value:
+                                  needle_state.str.borrowed_value;
+  if (memcmp(haystack_str, needle_str_value, needle_state.str_len) == 0)
+    result = filterx_boolean_new(TRUE);
 
 exit:
+  _state_cleanup(&needle_state);
   g_free(haystack_str);
-  if(self->needle.expr)
-    g_free(needle_str);
-  return filterx_boolean_new(startswith);
+  return result;
 }
 
 
@@ -254,27 +288,32 @@ _filterx_function_endswith_eval(FilterXExpr *s)
   gchar *haystack_str;
   if(!_eval_haystack_expr(self->haystack, self->ignore_case, &haystack_str, &haystack_len))
     return NULL;
-  gsize needle_len;
-  gchar *needle_str;
+
+  FilterXObject *result = NULL;
+  FilterXAffixState needle_state;
+  _state_init(&needle_state);
+
   if(!self->needle.expr)
     {
-      needle_str = self->needle.literal.str;
-      needle_len = self->needle.literal.str_len;
+      needle_state.str.borrowed_value = self->needle.literal.str;
+      needle_state.str_len = self->needle.literal.str_len;
     }
-  else if (!_eval_needle_expr(self->needle.expr, self->ignore_case, &needle_str, &needle_len))
-    return NULL;
-  gboolean endswith = FALSE;
-  if (needle_len > haystack_len)
+  else if (!_eval_needle_expr(self->needle.expr, self->ignore_case, &needle_state))
     goto exit;
+  if (needle_state.str_len > haystack_len)
+    {
+      result = filterx_boolean_new(FALSE);
+    }
 
-  if (memcmp(haystack_str + haystack_len - needle_len, needle_str, needle_len) == 0)
-    endswith = TRUE;
+  const gchar *needle_str_value = needle_state.str.owned_value != NULL ? needle_state.str.owned_value :
+                                  needle_state.str.borrowed_value;
+  if (memcmp(haystack_str + haystack_len - needle_state.str_len, needle_str_value, needle_state.str_len) == 0)
+    result = filterx_boolean_new(TRUE);
 
 exit:
+  _state_cleanup(&needle_state);
   g_free(haystack_str);
-  if(self->needle.expr)
-    g_free(needle_str);
-  return filterx_boolean_new(endswith);
+  return result;
 }
 
 

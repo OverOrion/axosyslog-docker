@@ -69,7 +69,7 @@ _extract_needle_arg(FilterXExprOrLiteral *needle, gboolean ignore_case, FilterXF
   FilterXExpr *needle_expr = filterx_function_args_get_expr(args, 1);
   if (!filterx_expr_is_literal(needle_expr))
     {
-      needle->expr = filterx_expr_ref(needle_expr);
+      needle->expr = needle_expr;
       return TRUE;
     }
 

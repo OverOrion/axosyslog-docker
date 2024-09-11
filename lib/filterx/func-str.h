@@ -27,35 +27,33 @@
 
 #include "filterx/expr-function.h"
 
-typedef struct _FilterXExprOrLiteral
+typedef struct _FilterXExprAffix
 {
-  FilterXExpr *expr;
+  FilterXFunction super;
+  FilterXExpr *haystack_expr;
   struct
   {
-    gchar *str;
-    gssize str_len;
-  } literal;
-} FilterXExprOrLiteral;
-
-typedef struct _FilterXFuncStartsWith
-{
-  FilterXFunction super;
-  FilterXExpr *haystack;
-  FilterXExprOrLiteral needle;
-  gsize needle_len;
+    FilterXObject *haystack_obj;
+    gchar *owned_str_value;
+  } _haystack;
+  FilterXExpr *needle_expr;
+  FilterXObject *_needle_obj;
+  struct
+  {
+    const gchar *borrowed_str_value;
+    gchar *owned_str_value;
+  } needle_str;
+  gssize needle_str_len;
   gboolean ignore_case;
-} FilterXFuncStartsWith;
+  gboolean (*process)(const gchar *haystack, const gchar *needle);
+} FilterXExprAffix;
 
-typedef struct _FilterXFuncEndsWith
-{
-  FilterXFunction super;
-  FilterXExpr *haystack;
-  FilterXExprOrLiteral needle;
-  gsize needle_len;
-  gboolean ignore_case;
-} FilterXFuncEndsWith;
+void filterx_expr_affix_init(FilterXExprAffix *self, const gchar *function_name, FilterXExpr *haystack,
+                             FilterXExpr *needle, gboolean ignorecase);
+gboolean filterx_expr_affix_get_needle_str(FilterXExprAffix *self, const gchar **needle_str, gssize *needle_str_len);
+gboolean filterx_expr_affix_get_haystack_str(FilterXExprAffix *self, const gchar **haystack, gssize *haystack_str_len);
+
 
 FilterXExpr *filterx_function_startswith_new(const gchar *function_name, FilterXFunctionArgs *args, GError **error);
-FilterXExpr *filterx_function_endswith_new(const gchar *function_name, FilterXFunctionArgs *args, GError **error);
 
 #endif

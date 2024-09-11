@@ -34,12 +34,12 @@
 gboolean filterx_expr_affix_init_instance(FilterXExprAffix *self, const gchar *function_name, FilterXExpr *haystack,
                                           FilterXExpr *needle, gboolean ignorecase)
 {
-  filterx_function_init_instance(self->super, function_name);
-  self->ignorecase = ignorecase;
-  self->haystack = filterx_expr_ref(haystack);
+  filterx_function_init_instance(&self->super, function_name);
+  self->ignore_case = ignorecase;
+  self->haystack_expr = filterx_expr_ref(haystack);
 
-  self->_needle_obj = NULL
-                      if (!filterx_expr_is_literal(needle))
+  self->_needle_obj = NULL;
+  if (!filterx_expr_is_literal(needle))
     {
       self->needle_expr = filterx_expr_ref(needle);
       return TRUE;
@@ -49,16 +49,16 @@ gboolean filterx_expr_affix_init_instance(FilterXExprAffix *self, const gchar *f
       self->_needle_obj = filterx_expr_eval(needle);
       if (!self->_needle_obj)
         goto error;
-      if (!filterx_object_extract_string(self->_needle_obj, &self.needle_str->borrowed_str_value, &self->needle_str_len))
+      if (!filterx_object_extract_string(self->_needle_obj, &self->needle_str.borrowed_str_value, &self->needle_str_len))
         goto error;
     }
-  if(self->ignorecase && self.needle_str->borrowed_str_value)
+  if(self->ignore_case && self->needle_str.borrowed_str_value)
     {
       self->needle_str.owned_str_value = g_utf8_casefold(self->needle_str.borrowed_str_value,
                                                          (gssize) MIN(self->needle_str_len, G_MAXSSIZE));
       self->needle_str_len = (gssize) MAX(g_utf8_strlen(self->needle_str.owned_str_value, -1), G_MAXSSIZE);
 
-      self.needle_str->borrowed_str_value = NULL;
+      self->needle_str.borrowed_str_value = NULL;
       if(self->_needle_obj)
         filterx_object_unref(self->_needle_obj);
     }
@@ -72,7 +72,7 @@ gboolean filterx_expr_affix_get_needle_str(FilterXExprAffix *self, const gchar *
 {
   if(!self->needle_expr)
     {
-      if (self->ignorecase)
+      if (self->ignore_case)
         *needle_str = (const gchar *) self->needle_str.owned_str_value;
       else
         *needle_str = self->needle_str.borrowed_str_value;
@@ -88,7 +88,7 @@ gboolean filterx_expr_affix_get_needle_str(FilterXExprAffix *self, const gchar *
                                        g_strdup_printf("invalid expression"), TRUE);
           return FALSE;
         }
-      if (!filterx_object_extract_string(self->_needle_obj, &needle_str, needle_str_len))
+      if (!filterx_object_extract_string(self->_needle_obj, needle_str, needle_str_len))
         {
           filterx_eval_push_error_info("failed to extract needle, it must be a string", self->needle_expr,
                                        g_strdup_printf("got %s instead", self->_needle_obj->type->name), TRUE);
@@ -97,7 +97,7 @@ gboolean filterx_expr_affix_get_needle_str(FilterXExprAffix *self, const gchar *
         }
       if (self->ignore_case)
         {
-          self->needle_str.owned_str_value = g_utf8_casefold(needle_str, (gssize) MIN(*needle_str_len, G_MAXSSIZE));
+          self->needle_str.owned_str_value = g_utf8_casefold(*needle_str, (gssize) MIN(*needle_str_len, G_MAXSSIZE));
           *needle_str = self->needle_str.owned_str_value;
           *needle_str_len = (gssize) MAX(g_utf8_strlen(self->needle_str.owned_str_value, -1), G_MAXSSIZE);
         }
@@ -107,26 +107,26 @@ gboolean filterx_expr_affix_get_needle_str(FilterXExprAffix *self, const gchar *
 
 gboolean filterx_expr_affix_get_haystack_str(FilterXExprAffix *self, const gchar **haystack, gssize *haystack_str_len)
 {
-  self->haystack_obj = filterx_expr_eval(self->haystack);
-  if (!self->haystack_obj)
+  self->_haystack.haystack_obj = filterx_expr_eval(self->haystack_expr);
+  if (!self->_haystack.haystack_obj)
     {
-      filterx_eval_push_error_info("failed to evaluate haystack", self->haystack,
+      filterx_eval_push_error_info("failed to evaluate haystack", self->haystack_expr,
                                    g_strdup_printf("invalid expression"), TRUE);
       return FALSE;
     }
-  if (!filterx_object_extract_string(self->haystack_obj, &haystack, haystack_str_len))
+  if (!filterx_object_extract_string(self->_haystack.haystack_obj, haystack, haystack_str_len))
     {
-      filterx_eval_push_error_info("failed to extract haystack, it must be a string", haystack,
-                                   g_strdup_printf("got %s instead", self->haystack_obj->type->name), TRUE);
-      filterx_object_unref(haystack_obj);
+      filterx_eval_push_error_info("failed to extract haystack, it must be a string", self->haystack_expr,
+                                   g_strdup_printf("got %s instead", self->_haystack.haystack_obj->type->name), TRUE);
+      filterx_object_unref(self->_haystack.haystack_obj);
       return FALSE;
     }
   if (self->ignore_case)
     {
-      self->_haystack.owned_str_value = g_utf8_casefold(haystack, (gssize) MIN(*haystack_str_len, G_MAXSSIZE);
-                                                        *haystack = self->_haystack.owned_str_value;
-                                                        *haystack_str_len = (gssize) MAX(g_utf8_strlen(self->_haystack.owned_str_value, -1), G_MAXSSIZE);
+      self->_haystack.owned_str_value = g_utf8_casefold(*haystack, (gssize) MIN(*haystack_str_len, G_MAXSSIZE));
+      *haystack = self->_haystack.owned_str_value;
+      *haystack_str_len = (gssize) MAX(g_utf8_strlen(self->_haystack.owned_str_value, -1), G_MAXSSIZE);
     }
-                                    return TRUE;
+  return TRUE;
 
 }

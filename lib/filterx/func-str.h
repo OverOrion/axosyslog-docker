@@ -45,7 +45,7 @@ typedef struct _FilterXExprAffix
   } needle_str;
   gssize needle_str_len;
   gboolean ignore_case;
-  gboolean (*process)(const gchar *haystack, const gchar *needle);
+  gboolean (*process)(const gchar *haystack, gsize haystack_len, const gchar *needle, gsize needle_len);
 } FilterXExprAffix;
 
 void filterx_expr_affix_init(FilterXExprAffix *self, const gchar *function_name, FilterXExpr *haystack,
@@ -54,6 +54,10 @@ gboolean filterx_expr_affix_get_needle_str(FilterXExprAffix *self, const gchar *
 gboolean filterx_expr_affix_get_haystack_str(FilterXExprAffix *self, const gchar **haystack, gssize *haystack_str_len);
 
 
+typedef struct _FilterXFunctionStartsWith
+{
+  FilterXExprAffix super;
+} FilterXFunctionStartsWith;
 FilterXExpr *filterx_function_startswith_new(const gchar *function_name, FilterXFunctionArgs *args, GError **error);
 
 #endif

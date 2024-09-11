@@ -130,3 +130,116 @@ gboolean filterx_expr_affix_get_haystack_str(FilterXExprAffix *self, const gchar
   return TRUE;
 
 }
+
+static FilterXExpr *
+_extract_haystack_arg(FilterXFunctionArgs *args, GError **error, const gchar *function_usage)
+{
+  gsize len = filterx_function_args_len(args);
+  if (len != 2)
+    {
+      g_set_error(error, FILTERX_FUNCTION_ERROR, FILTERX_FUNCTION_ERROR_CTOR_FAIL,
+                  "invalid number of arguments. %s", function_usage);
+      return NULL;
+    }
+  FilterXExpr *haystack = filterx_function_args_get_expr(args, 0);
+  if (!haystack)
+    {
+      g_set_error(error, FILTERX_FUNCTION_ERROR, FILTERX_FUNCTION_ERROR_CTOR_FAIL,
+                  "haystack must be set. %s", function_usage);
+      return NULL;
+    }
+  return haystack;
+}
+
+static FilterXExpr *
+_extract_needle_arg(FilterXFunctionArgs *args, GError **error, const gchar *function_usage)
+{
+  gsize len = filterx_function_args_len(args);
+  if (len != 2)
+    {
+      g_set_error(error, FILTERX_FUNCTION_ERROR, FILTERX_FUNCTION_ERROR_CTOR_FAIL,
+                  "invalid number of arguments. %s", function_usage);
+      return NULL;
+    }
+  FilterXExpr *needle = filterx_function_args_get_expr(args, 1);
+  if (!needle)
+    {
+      g_set_error(error, FILTERX_FUNCTION_ERROR, FILTERX_FUNCTION_ERROR_CTOR_FAIL,
+                  "needle must be set. %s", function_usage);
+      return NULL;
+    }
+  return needle;
+}
+
+static gboolean
+_extract_optional_args(gboolean *ignore_case, FilterXFunctionArgs *args, GError **error, const gchar *function_usage)
+{
+  gboolean exists, eval_error;
+  gboolean value = filterx_function_args_get_named_literal_boolean(args, "ignorecase", &exists, &eval_error);
+  if (!exists)
+    return TRUE;
+
+  if (eval_error)
+    {
+      g_set_error(error, FILTERX_FUNCTION_ERROR, FILTERX_FUNCTION_ERROR_CTOR_FAIL,
+                  "ignorecase argument must be boolean literal. %s", function_usage);
+      return FALSE;
+    }
+
+  *ignore_case = value;
+  return TRUE;
+}
+
+gboolean
+_startswith_process(const gchar *haystack, gsize haystack_len, const gchar *needle, gsize needle_len)
+{
+  if (needle_len > haystack_len)
+    return FALSE;
+  return memcmp(haystack, needle, needle_len) == 0;
+}
+
+static FilterXObject *
+_startswith_eval(FilterXExpr *s)
+{
+  FilterXFunctionStartsWith *self = (FilterXFunctionStartsWith *)s;
+
+  const gchar *haystack_str;
+  gssize haystack_len;
+  if (!filterx_expr_affix_get_haystack_str(&self->super, &haystack_str, &haystack_len))
+    return NULL;
+
+  const gchar *needle_str;
+  gssize needle_len;
+  if (!filterx_expr_affix_get_needle_str(&self->super, &needle_str, &needle_len))
+    return NULL;
+
+  gboolean startswith = self->super.process(haystack_str, haystack_len, needle_str, needle_len);
+  return filterx_boolean_new(startswith);
+}
+
+FilterXExpr *
+filterx_function_startswith_new(const gchar *function_name, FilterXFunctionArgs *args, GError **error)
+{
+  FilterXFunctionStartsWith *self = g_new0(FilterXFunctionStartsWith, 1);
+
+  gboolean ignore_case = FALSE;
+  if(!_extract_optional_args(&ignore_case, args, error, "asd"))
+    goto error;
+  FilterXExpr *haystack_expr = _extract_haystack_arg(args, error, "asd");
+  if (!haystack_expr)
+    goto error;
+  FilterXExpr *needle_expr = _extract_needle_arg(args, error, "asd");
+  if (!needle_expr)
+    goto error;
+  filterx_expr_affix_init_instance(&self->super, function_name, haystack_expr, needle_expr, ignore_case);
+  self->super.process = _startswith_process;
+
+  self->super.super.super.eval = _startswith_eval;
+  filterx_function_args_free(args);
+  return &self->super.super.super;
+
+error:
+  filterx_function_args_free(args);
+  filterx_expr_unref(&self->super.super.super);
+  return NULL;
+}

@@ -31,17 +31,36 @@
 #include "object-string.h"
 #include "filterx/filterx-object.h"
 
+static void _filterx_expr_affix_free(FilterXExprAffix *self)
+{
+    if (self->ignore_case)
+    {
+      g_free(self->_haystack.owned_str_value);
+      if (self->needle_str.owned_str_value)
+        g_free(self->needle_str.owned_str_value);
+    }
+    else {
+      filterx_object_unref(self->_haystack.haystack_obj);
+      filterx_object_unref(self->_needle_obj);
+      filterx_expr_unref(self->needle_expr);
+    }
+
+    filterx_expr_unref(self->haystack_expr);
+
+    filterx_function_free_method(&self->super);
+}
+
 gboolean filterx_expr_affix_init_instance(FilterXExprAffix *self, const gchar *function_name, FilterXExpr *haystack,
                                           FilterXExpr *needle, gboolean ignorecase)
 {
   filterx_function_init_instance(&self->super, function_name);
   self->ignore_case = ignorecase;
-  self->haystack_expr = filterx_expr_ref(haystack);
+  self->haystack_expr = haystack;
 
   self->_needle_obj = NULL;
   if (!filterx_expr_is_literal(needle))
     {
-      self->needle_expr = filterx_expr_ref(needle);
+      self->needle_expr = needle;
       return TRUE;
     }
   else
@@ -59,8 +78,8 @@ gboolean filterx_expr_affix_init_instance(FilterXExprAffix *self, const gchar *f
       self->needle_str_len = (gssize) MAX(g_utf8_strlen(self->needle_str.owned_str_value, -1), G_MAXSSIZE);
 
       self->needle_str.borrowed_str_value = NULL;
-      if(self->_needle_obj)
-        filterx_object_unref(self->_needle_obj);
+      // if(self->_needle_obj)
+      //   filterx_object_unref(self->_needle_obj);
     }
   return TRUE;
 
@@ -126,9 +145,9 @@ gboolean filterx_expr_affix_get_haystack_str(FilterXExprAffix *self, const gchar
       self->_haystack.owned_str_value = g_utf8_casefold(*haystack, (gssize) MIN(*haystack_str_len, G_MAXSSIZE));
       *haystack = self->_haystack.owned_str_value;
       *haystack_str_len = (gssize) MAX(g_utf8_strlen(self->_haystack.owned_str_value, -1), G_MAXSSIZE);
+      filterx_object_unref(self->_haystack.haystack_obj);
     }
   return TRUE;
-
 }
 
 static FilterXExpr *
@@ -217,6 +236,14 @@ _startswith_eval(FilterXExpr *s)
   return filterx_boolean_new(startswith);
 }
 
+static void
+_startswith_free(FilterXExpr *s)
+{
+  FilterXFunctionStartsWith *self = (FilterXFunctionStartsWith*) s;
+
+  _filterx_expr_affix_free(&self->super);
+}
+
 FilterXExpr *
 filterx_function_startswith_new(const gchar *function_name, FilterXFunctionArgs *args, GError **error)
 {
@@ -231,10 +258,13 @@ filterx_function_startswith_new(const gchar *function_name, FilterXFunctionArgs 
   FilterXExpr *needle_expr = _extract_needle_arg(args, error, "asd");
   if (!needle_expr)
     goto error;
+
   filterx_expr_affix_init_instance(&self->super, function_name, haystack_expr, needle_expr, ignore_case);
   self->super.process = _startswith_process;
 
   self->super.super.super.eval = _startswith_eval;
+  self->super.super.super.free_fn = _startswith_free;
+
   filterx_function_args_free(args);
   return &self->super.super.super;
 

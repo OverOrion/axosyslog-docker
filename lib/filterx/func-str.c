@@ -33,25 +33,23 @@
 
 static void _filterx_expr_affix_free(FilterXExprAffix *self)
 {
-    if (self->ignore_case)
+  if (self->ignore_case)
     {
       g_free(self->_haystack.owned_str_value);
-      if (self->needle_str.owned_str_value)
-        g_free(self->needle_str.owned_str_value);
+      g_free(self->needle_str.owned_str_value);
     }
-    else {
-      filterx_object_unref(self->_haystack.haystack_obj);
-      filterx_object_unref(self->_needle_obj);
-      filterx_expr_unref(self->needle_expr);
-    }
+  filterx_object_unref(self->_needle_obj);
+  filterx_expr_unref(self->needle_expr);
 
-    filterx_expr_unref(self->haystack_expr);
+  filterx_object_unref(self->_haystack.haystack_obj);
+  filterx_expr_unref(self->haystack_expr);
 
-    filterx_function_free_method(&self->super);
+  filterx_function_free_method(&self->super);
 }
 
-gboolean filterx_expr_affix_init_instance(FilterXExprAffix *self, const gchar *function_name, FilterXExpr *haystack,
-                                          FilterXExpr *needle, gboolean ignorecase)
+gboolean
+filterx_expr_affix_init_instance(FilterXExprAffix *self, const gchar *function_name, FilterXExpr *haystack,
+                                 FilterXExpr *needle, gboolean ignorecase)
 {
   filterx_function_init_instance(&self->super, function_name);
   self->ignore_case = ignorecase;
@@ -71,15 +69,13 @@ gboolean filterx_expr_affix_init_instance(FilterXExprAffix *self, const gchar *f
       if (!filterx_object_extract_string(self->_needle_obj, &self->needle_str.borrowed_str_value, &self->needle_str_len))
         goto error;
     }
-  if(self->ignore_case && self->needle_str.borrowed_str_value)
+  if(self->ignore_case)
     {
       self->needle_str.owned_str_value = g_utf8_casefold(self->needle_str.borrowed_str_value,
                                                          (gssize) MIN(self->needle_str_len, G_MAXSSIZE));
-      self->needle_str_len = (gssize) MAX(g_utf8_strlen(self->needle_str.owned_str_value, -1), G_MAXSSIZE);
+      self->needle_str_len = (gssize) MIN(g_utf8_strlen(self->needle_str.owned_str_value, -1), G_MAXSSIZE);
 
       self->needle_str.borrowed_str_value = NULL;
-      // if(self->_needle_obj)
-      //   filterx_object_unref(self->_needle_obj);
     }
   return TRUE;
 
@@ -87,7 +83,9 @@ error:
   filterx_object_unref(self->_needle_obj);
   return FALSE;
 }
-gboolean filterx_expr_affix_get_needle_str(FilterXExprAffix *self, const gchar **needle_str, gssize *needle_str_len)
+
+gboolean
+filterx_expr_affix_get_needle_str(FilterXExprAffix *self, const gchar **needle_str, gssize *needle_str_len)
 {
   if(!self->needle_expr)
     {
@@ -118,13 +116,14 @@ gboolean filterx_expr_affix_get_needle_str(FilterXExprAffix *self, const gchar *
         {
           self->needle_str.owned_str_value = g_utf8_casefold(*needle_str, (gssize) MIN(*needle_str_len, G_MAXSSIZE));
           *needle_str = self->needle_str.owned_str_value;
-          *needle_str_len = (gssize) MAX(g_utf8_strlen(self->needle_str.owned_str_value, -1), G_MAXSSIZE);
+          *needle_str_len = (gssize) MIN(g_utf8_strlen(self->needle_str.owned_str_value, -1), G_MAXSSIZE);
         }
     }
   return TRUE;
 }
 
-gboolean filterx_expr_affix_get_haystack_str(FilterXExprAffix *self, const gchar **haystack, gssize *haystack_str_len)
+gboolean
+filterx_expr_affix_get_haystack_str(FilterXExprAffix *self, const gchar **haystack, gssize *haystack_str_len)
 {
   self->_haystack.haystack_obj = filterx_expr_eval(self->haystack_expr);
   if (!self->_haystack.haystack_obj)
@@ -145,7 +144,6 @@ gboolean filterx_expr_affix_get_haystack_str(FilterXExprAffix *self, const gchar
       self->_haystack.owned_str_value = g_utf8_casefold(*haystack, (gssize) MIN(*haystack_str_len, G_MAXSSIZE));
       *haystack = self->_haystack.owned_str_value;
       *haystack_str_len = (gssize) MAX(g_utf8_strlen(self->_haystack.owned_str_value, -1), G_MAXSSIZE);
-      filterx_object_unref(self->_haystack.haystack_obj);
     }
   return TRUE;
 }
@@ -233,13 +231,14 @@ _startswith_eval(FilterXExpr *s)
     return NULL;
 
   gboolean startswith = self->super.process(haystack_str, haystack_len, needle_str, needle_len);
+  // filterx_object_unref(self->_haystack.haystack_obj);
   return filterx_boolean_new(startswith);
 }
 
 static void
 _startswith_free(FilterXExpr *s)
 {
-  FilterXFunctionStartsWith *self = (FilterXFunctionStartsWith*) s;
+  FilterXFunctionStartsWith *self = (FilterXFunctionStartsWith *) s;
 
   _filterx_expr_affix_free(&self->super);
 }

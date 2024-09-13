@@ -29,7 +29,8 @@
 #include "filterx/filterx-eval.h"
 #include "object-extractor.h"
 #include "object-string.h"
-#include "filterx/filterx-object.h"
+#include "filterx/object-json.h"
+#include "filterx/object-list-interface.h"
 
 static void _filterx_expr_affix_free(FilterXExprAffix *self)
 {
@@ -48,10 +49,56 @@ static void _filterx_expr_affix_free(FilterXExprAffix *self)
 }
 
 gboolean
+_filterx_expr_affix_init_needle_list(FilterXExprAffix *self)
+{
+  guint64 size;
+  if (!filterx_object_len(self->_needle_obj, &size))
+    return FALSE;
+  self->num_of_needles = size;
+  self->_needle_list = self->_needle_obj;
+  self->_needle_obj = NULL;
+
+  return TRUE;
+}
+
+gboolean
+_filterx_expr_affix_get_nth_needle(FilterXExprAffix *self, guint64 index, const gchar **needle_str,
+                                   gssize *needle_str_len)
+{
+
+  filterx_object_unref(self->_needle_obj);
+  self->_needle_obj = filterx_list_get_subscript(self->_needle_list, index);
+  if (!self->_needle_obj)
+    goto error;
+  if (filterx_object_is_type(self->_needle_obj, &FILTERX_TYPE_NAME(string)) &&
+      !filterx_object_extract_string(self->_needle_obj, &self->needle_str.borrowed_str_value, &self->needle_str_len))
+    goto error;
+  *needle_str = (const gchar *) self->needle_str.owned_str_value;
+  *needle_str_len = (gssize) MIN(self->needle_str_len, G_MAXSSIZE);
+  if(self->ignore_case)
+    {
+      g_free(self->needle_str.owned_str_value);
+      self->needle_str.owned_str_value = g_utf8_casefold(self->needle_str.borrowed_str_value,
+                                                         (gssize) MIN(self->needle_str_len, G_MAXSSIZE));
+      self->needle_str_len = (gssize) MIN(g_utf8_strlen(self->needle_str.owned_str_value, -1), G_MAXSSIZE);
+
+      self->needle_str.borrowed_str_value = NULL;
+
+      *needle_str = self->needle_str.owned_str_value;
+      *needle_str_len = (gssize) MIN(g_utf8_strlen(self->needle_str.owned_str_value, -1), G_MAXSSIZE);
+    }
+    return TRUE;
+error:
+  filterx_object_unref(self->_needle_obj);
+  return FALSE;
+}
+
+gboolean
 filterx_expr_affix_init_instance(FilterXExprAffix *self, const gchar *function_name, FilterXExpr *haystack,
                                  FilterXExpr *needle, gboolean ignorecase)
 {
   filterx_function_init_instance(&self->super, function_name);
+  self->num_of_needles = 0;
   self->ignore_case = ignorecase;
   self->haystack_expr = haystack;
 
@@ -66,7 +113,8 @@ filterx_expr_affix_init_instance(FilterXExprAffix *self, const gchar *function_n
       self->_needle_obj = filterx_expr_eval(needle);
       if (!self->_needle_obj)
         goto error;
-      if (!filterx_object_extract_string(self->_needle_obj, &self->needle_str.borrowed_str_value, &self->needle_str_len))
+      if (filterx_object_is_type(self->_needle_obj, &FILTERX_TYPE_NAME(string)) &&
+          !filterx_object_extract_string(self->_needle_obj, &self->needle_str.borrowed_str_value, &self->needle_str_len))
         goto error;
     }
   if(self->ignore_case)
@@ -105,16 +153,18 @@ filterx_expr_affix_get_needle_str(FilterXExprAffix *self, const gchar **needle_s
                                        g_strdup_printf("invalid expression"), TRUE);
           return FALSE;
         }
-      if (!filterx_object_extract_string(self->_needle_obj, needle_str, needle_str_len))
+      else if (filterx_object_is_type(self->_needle_obj, &FILTERX_TYPE_NAME(json_array)))
+        return _filterx_expr_affix_init_needle_list(self);
+        if (!filterx_object_extract_string(self->_needle_obj, needle_str, needle_str_len))
         {
           filterx_eval_push_error_info("failed to extract needle, it must be a string", self->needle_expr,
                                        g_strdup_printf("got %s instead", self->_needle_obj->type->name), TRUE);
-          filterx_object_unref(self->_needle_obj);
-          return FALSE;
-        }
+            filterx_object_unref(self->_needle_obj);
+            return FALSE;
+          }
       if (self->ignore_case)
-        {
-          self->needle_str.owned_str_value = g_utf8_casefold(*needle_str, (gssize) MIN(*needle_str_len, G_MAXSSIZE));
+      {
+        self->needle_str.owned_str_value = g_utf8_casefold(*needle_str, (gssize) MIN(*needle_str_len, G_MAXSSIZE));
           *needle_str = self->needle_str.owned_str_value;
           *needle_str_len = (gssize) MIN(g_utf8_strlen(self->needle_str.owned_str_value, -1), G_MAXSSIZE);
         }
@@ -227,12 +277,28 @@ _startswith_eval(FilterXExpr *s)
 
   const gchar *needle_str;
   gssize needle_len;
-  if (!filterx_expr_affix_get_needle_str(&self->super, &needle_str, &needle_len))
+
+  gboolean is_needle_ready = filterx_expr_affix_get_needle_str(&self->super, &needle_str, &needle_len);
+  if (!is_needle_ready)
     return NULL;
 
-  gboolean startswith = self->super.process(haystack_str, haystack_len, needle_str, needle_len);
-  // filterx_object_unref(self->_haystack.haystack_obj);
+
+  gboolean startswith = FALSE;
+  if (self->super.num_of_needles == 0 )
+    {
+      startswith = self->super.process(haystack_str, haystack_len, needle_str, needle_len);
+      return filterx_boolean_new(startswith);
+    }
+
+  guint64 num_of_needles = self->super.num_of_needles;
+  for(guint64 i = 0; i < num_of_needles && !startswith; i++)
+    {
+      _filterx_expr_affix_get_nth_needle(&self->super, i, &needle_str, &needle_len);
+      startswith = self->super.process(haystack_str, haystack_len, needle_str, needle_len);
+    }
   return filterx_boolean_new(startswith);
+
+
 }
 
 static void

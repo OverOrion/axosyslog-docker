@@ -43,8 +43,10 @@ typedef struct _FilterXExprAffix
     const gchar *borrowed_str_value;
     gchar *owned_str_value;
   } needle_str;
+  FilterXObject *_needle_list;
   gssize needle_str_len;
   gboolean ignore_case;
+  guint64 num_of_needles;
   gboolean (*process)(const gchar *haystack, gsize haystack_len, const gchar *needle, gsize needle_len);
 } FilterXExprAffix;
 

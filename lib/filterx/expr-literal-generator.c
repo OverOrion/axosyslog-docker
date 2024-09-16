@@ -174,6 +174,23 @@ filterx_literal_dict_generator_foreach(FilterXExpr *s, FilterXLiteralDictGenerat
   return TRUE;
 }
 
+gboolean
+filterx_literal_list_generator_foreach(FilterXExpr *s, FilterXLiteralListGeneratorForeachFunc func, gpointer user_data)
+{
+  FilterXExprLiteralGenerator *self = (FilterXExprLiteralGenerator *) s;
+
+  gint64 index = 0;
+  for (GList *link = self->elements; link; link = link->next)
+    {
+      FilterXLiteralGeneratorElem *elem = (FilterXLiteralGeneratorElem *) link->data;
+
+      if (!func(index, elem->value, user_data))
+        return FALSE;
+    }
+
+  return TRUE;
+}
+
 FilterXExpr *
 filterx_literal_dict_generator_new(void)
 {

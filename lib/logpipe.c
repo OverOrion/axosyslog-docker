@@ -34,7 +34,7 @@ void log_path_options_init(LogPathOptions *self)
   self->flow_control_requested = FALSE;
   self->matched = NULL;
   self->lpo_parent_junction = NULL;
-  self->filterx_context = NULL;
+  filterx_eval_init_context(self->filterx_context, NULL);
 }
 
 void log_path_options_init_noack(LogPathOptions *self)
@@ -43,7 +43,7 @@ void log_path_options_init_noack(LogPathOptions *self)
   self->flow_control_requested = FALSE;
   self->matched = NULL;
   self->lpo_parent_junction = NULL;
-  self->filterx_context = NULL;
+  filterx_eval_init_context(self->filterx_context, NULL);
 }
 
 EVTTAG *

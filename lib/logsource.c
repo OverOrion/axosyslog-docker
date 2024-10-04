@@ -555,7 +555,8 @@ log_source_deinit(LogPipe *s)
 void
 log_source_post(LogSource *self, LogMessage *msg)
 {
-  LogPathOptions path_options = LOG_PATH_OPTIONS_INIT;
+  LogPathOptions path_options;
+  log_path_options_init(&path_options);
   gint old_window_size;
 
   ack_tracker_track_msg(self->ack_tracker, msg);

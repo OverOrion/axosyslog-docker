@@ -629,7 +629,8 @@ static void
 log_writer_emit_suppress_summary(LogWriter *self)
 {
   LogMessage *m;
-  LogPathOptions path_options = LOG_PATH_OPTIONS_INIT;
+  LogPathOptions path_options;
+  log_path_options_init(&path_options);
   gchar buf[1024];
   gssize len;
   const gchar *p;
@@ -815,7 +816,8 @@ static void
 log_writer_mark_timeout(void *cookie)
 {
   LogWriter *self = (LogWriter *)cookie;
-  LogPathOptions path_options = LOG_PATH_OPTIONS_INIT;
+  LogPathOptions path_options;
+  log_path_options_init(&path_options);
   const gchar *hostname;
   gsize hostname_len;
   LogMessage *msg;
@@ -1343,7 +1345,8 @@ log_writer_flush(LogWriter *self, LogWriterFlushMode flush_mode)
 
   while ((!main_loop_worker_job_quit() || flush_mode == LW_FLUSH_FORCE) && !write_error)
     {
-      LogPathOptions path_options = LOG_PATH_OPTIONS_INIT;
+      LogPathOptions path_options;
+      log_path_options_init(&path_options);
       LogMessage *msg = log_writer_queue_pop_message(self, &path_options, flush_mode == LW_FLUSH_FORCE);
 
       if (!msg)

@@ -1480,7 +1480,8 @@ log_msg_merge_context(LogMessage *self, LogMessage **context, gsize context_len)
 static void
 log_msg_clone_ack(LogMessage *msg, AckType ack_type)
 {
-  LogPathOptions path_options = LOG_PATH_OPTIONS_INIT;
+  LogPathOptions path_options;
+  log_path_options_init(&path_options);
 
   g_assert(msg->original);
   path_options.ack_needed = TRUE;

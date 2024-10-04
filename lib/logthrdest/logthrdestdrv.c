@@ -443,7 +443,8 @@ static void
 _perform_inserts(LogThreadedDestWorker *self)
 {
   LogThreadedResult result;
-  LogPathOptions path_options = LOG_PATH_OPTIONS_INIT;
+  LogPathOptions path_options;
+  log_path_options_init(&path_options);
 
   if (self->batch_size == 0)
     {

@@ -42,7 +42,8 @@ stateful_parser_emit_synthetic(StatefulParser *self, LogMessage *msg)
 {
   if (self->inject_mode != LDBP_IM_INTERNAL)
     {
-      LogPathOptions path_options = LOG_PATH_OPTIONS_INIT;
+      LogPathOptions path_options;
+      log_path_options_init(&path_options);
 
       path_options.ack_needed = FALSE;
       log_pipe_forward_msg(&self->super.super, log_msg_ref(msg), &path_options);

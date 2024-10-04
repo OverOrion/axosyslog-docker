@@ -147,7 +147,8 @@ static LogThreadedFetchResult
 _fetch(LogThreadedFetcherDriver *s)
 {
   ThreadedDiskqSourceDriver *self = (ThreadedDiskqSourceDriver *) s;
-  LogPathOptions local_options = LOG_PATH_OPTIONS_INIT;
+  LogPathOptions local_options;
+  log_path_options_init(&local_options);
 
   gint64 remaining_messages = log_queue_get_length(self->queue);
   LogMessage *msg = log_queue_pop_head(self->queue, &local_options);

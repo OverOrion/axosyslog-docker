@@ -73,7 +73,8 @@ feed_empty_messages(LogQueue *q, const LogPathOptions *path_options, gint n)
 void
 feed_some_messages(LogQueue *q, int n)
 {
-  LogPathOptions path_options = LOG_PATH_OPTIONS_INIT;
+  LogPathOptions path_options;
+  log_path_options_init(&path_options);
 
   path_options.ack_needed = TRUE;
   path_options.flow_control_requested = TRUE;
@@ -85,7 +86,8 @@ void
 send_some_messages(LogQueue *q, gint n, gboolean remove_from_backlog)
 {
   gint i;
-  LogPathOptions path_options = LOG_PATH_OPTIONS_INIT;
+  LogPathOptions path_options;
+  log_path_options_init(&path_options);
 
   for (i = 0; i < n; i++)
     {

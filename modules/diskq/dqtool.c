@@ -227,7 +227,8 @@ dqtool_cat(int argc, char *argv[])
   msg = g_string_sized_new(128);
   for (i = optind; i < argc; i++)
     {
-      LogPathOptions local_path_options = LOG_PATH_OPTIONS_INIT;
+      LogPathOptions local_path_options;
+      log_path_options_init(&local_path_options);
       LogQueue *lq;
 
       if (!open_queue(argv[i], &lq, &options, TRUE))

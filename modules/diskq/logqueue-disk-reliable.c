@@ -84,7 +84,8 @@ _empty_queue(LogQueueDiskReliable *self, GQueue *queue)
     {
       gint64 temppos;
       LogMessage *msg;
-      LogPathOptions path_options = LOG_PATH_OPTIONS_INIT;
+      LogPathOptions path_options;
+      log_path_options_init(&path_options);
       _pop_from_memory_queue_head(queue, &temppos, &msg, &path_options);
 
       log_queue_memory_usage_sub(&self->super.super, log_msg_get_size(msg));
@@ -108,7 +109,8 @@ _ack_backlog(LogQueue *s, gint num_msg_to_ack)
 {
   LogQueueDiskReliable *self = (LogQueueDiskReliable *)s;
   LogMessage *msg;
-  LogPathOptions path_options = LOG_PATH_OPTIONS_INIT;
+  LogPathOptions path_options;
+  log_path_options_init(&path_options);
   guint i;
 
   g_mutex_lock(&s->lock);

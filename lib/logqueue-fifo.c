@@ -178,7 +178,8 @@ log_queue_fifo_keep_on_reload(LogQueue *s)
 static inline void
 log_queue_fifo_drop_messages_from_input_queue(LogQueueFifo *self, InputQueue *input_queue, gint num_of_messages_to_drop)
 {
-  LogPathOptions path_options = LOG_PATH_OPTIONS_INIT;
+  LogPathOptions path_options;
+  log_path_options_init(&path_options);
 
   struct iv_list_head *item = input_queue->items.next;
   for (gint dropped = 0; dropped < num_of_messages_to_drop;)
@@ -500,7 +501,8 @@ log_queue_fifo_ack_backlog(LogQueue *s, gint rewind_count)
 {
   LogQueueFifo *self = (LogQueueFifo *) s;
   LogMessage *msg;
-  LogPathOptions path_options = LOG_PATH_OPTIONS_INIT;
+  LogPathOptions path_options;
+  log_path_options_init(&path_options);
   gint pos;
 
   for (pos = 0; pos < rewind_count && self->backlog_queue.len > 0; pos++)
@@ -588,7 +590,8 @@ log_queue_fifo_free_queue(struct iv_list_head *q)
   while (!iv_list_empty(q))
     {
       LogMessageQueueNode *node;
-      LogPathOptions path_options = LOG_PATH_OPTIONS_INIT;
+      LogPathOptions path_options;
+      log_path_options_init(&path_options);
       LogMessage *msg;
 
       node = iv_list_entry(q->next, LogMessageQueueNode, list);

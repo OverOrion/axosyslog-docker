@@ -28,6 +28,24 @@
 
 gboolean (*pipe_single_step_hook)(LogPipe *pipe, LogMessage *msg, const LogPathOptions *path_options);
 
+void log_path_options_init(LogPathOptions *self)
+{
+  self->ack_needed = TRUE;
+  self->flow_control_requested = FALSE;
+  self->matched = NULL;
+  self->lpo_parent_junction = NULL;
+  self->filterx_context = NULL;
+}
+
+void log_path_options_init_noack(LogPathOptions *self)
+{
+  self->ack_needed = FALSE;
+  self->flow_control_requested = FALSE;
+  self->matched = NULL;
+  self->lpo_parent_junction = NULL;
+  self->filterx_context = NULL;
+}
+
 EVTTAG *
 log_pipe_location_tag(LogPipe *pipe)
 {

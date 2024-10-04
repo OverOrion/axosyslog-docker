@@ -162,6 +162,7 @@ _move_messages_from_disk_to_front_cache(LogQueueDiskNonReliable *self)
         break;
 
       LogPathOptions path_options;
+      log_path_options_init(&path_options);
       LogMessage *msg = log_queue_disk_read_message(&self->super, &path_options);
 
       if (!msg)
@@ -200,7 +201,8 @@ _ack_backlog(LogQueue *s, gint num_msg_to_ack)
 {
   LogQueueDiskNonReliable *self = (LogQueueDiskNonReliable *)s;
   LogMessage *msg;
-  LogPathOptions path_options = LOG_PATH_OPTIONS_INIT;
+  LogPathOptions path_options;
+  log_path_options_init(&path_options);
   guint i;
 
   for (i = 0; i < num_msg_to_ack; i++)
@@ -493,7 +495,8 @@ _empty_queue(LogQueueDiskNonReliable *self, GQueue *q)
   while (q && !g_queue_is_empty(q))
     {
       LogMessage *lm;
-      LogPathOptions path_options = LOG_PATH_OPTIONS_INIT;
+      LogPathOptions path_options;
+      log_path_options_init(&path_options);
 
       lm = g_queue_pop_head(q);
       POINTER_TO_LOG_PATH_OPTIONS(g_queue_pop_head(q), &path_options);

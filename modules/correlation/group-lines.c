@@ -206,7 +206,8 @@ _update_context(GroupingParser *s, CorrelationContext *c, LogMessage *msg)
 static LogMessage *
 _generate_synthetic_msg(GroupLines *self, GroupLinesContext *context)
 {
-  LogPathOptions path_options = LOG_PATH_OPTIONS_INIT;
+  LogPathOptions path_options;
+  log_path_options_init(&path_options);
 
   path_options.ack_needed = FALSE;
 

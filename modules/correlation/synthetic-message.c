@@ -243,7 +243,8 @@ synthetic_message_apply(SyntheticMessage *self, CorrelationContext *context, Log
 static LogMessage *
 _generate_message_inheriting_properties_from_the_last_message(LogMessage *msg)
 {
-  LogPathOptions path_options = LOG_PATH_OPTIONS_INIT;
+  LogPathOptions path_options;
+  log_path_options_init(&path_options);
 
   path_options.ack_needed = FALSE;
   return log_msg_clone_cow(msg, &path_options);

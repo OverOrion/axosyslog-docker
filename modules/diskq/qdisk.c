@@ -1233,7 +1233,8 @@ static gboolean
 _save_queue(QDisk *self, GQueue *q, QDiskQueuePosition *q_pos)
 {
   LogMessage *msg;
-  LogPathOptions path_options = LOG_PATH_OPTIONS_INIT;
+  LogPathOptions path_options;
+  log_path_options_init(&path_options);
   SerializeArchive *sa;
   GString *serialized;
   gint64  current_offset = 0;

@@ -222,8 +222,9 @@ struct _LogPathOptions
   FilterXEvalContext *filterx_context;
 };
 
-#define LOG_PATH_OPTIONS_INIT { TRUE, FALSE, NULL, NULL, NULL}
-#define LOG_PATH_OPTIONS_INIT_NOACK { FALSE, FALSE, NULL, NULL, NULL }
+void log_path_options_init(LogPathOptions *self);
+
+void log_path_options_init_noack(LogPathOptions *self);
 
 /*
  * Embed a step in our LogPathOptions chain.

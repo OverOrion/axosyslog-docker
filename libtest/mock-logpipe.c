@@ -30,7 +30,7 @@ log_pipe_mock_get_message(LogPipeMock *self, gint ndx)
 }
 
 static void
-log_pipe_mock_queue(LogPipe *s, LogMessage *msg, const LogPathOptions *path_options)
+log_pipe_mock_queue(LogPipe *s, LogMessage *msg, LogPathOptions *path_options)
 {
   LogPipeMock *self = (LogPipeMock *) s;
 

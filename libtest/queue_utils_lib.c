@@ -57,7 +57,7 @@ test_ack(LogMessage *msg, AckType ack_type)
 }
 
 void
-feed_empty_messages(LogQueue *q, const LogPathOptions *path_options, gint n)
+feed_empty_messages(LogQueue *q, LogPathOptions *path_options, gint n)
 {
   for (gint i = 0; i < n; i++)
     {

@@ -101,7 +101,7 @@ kv_parser_init_scanner_method(KVParser *self, KVScanner *kv_scanner)
 }
 
 static gboolean
-_process(LogParser *s, LogMessage **pmsg, const LogPathOptions *path_options, const gchar *input,
+_process(LogParser *s, LogMessage **pmsg, LogPathOptions *path_options, const gchar *input,
          gsize input_len)
 {
   KVParser *self = (KVParser *) s;

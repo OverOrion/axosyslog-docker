@@ -58,7 +58,7 @@ static LogPipe *
 native_parser_clone(LogPipe *s);
 
 static gboolean
-native_parser_process(LogParser *s, LogMessage **pmsg, const LogPathOptions *path_options, const gchar *input,
+native_parser_process(LogParser *s, LogMessage **pmsg, LogPathOptions *path_options, const gchar *input,
                       gsize input_len)
 {
   ParserNative *self = (ParserNative *) s;

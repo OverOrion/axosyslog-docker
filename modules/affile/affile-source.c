@@ -83,7 +83,7 @@ affile_sd_format_persist_name(const LogPipe *s)
 }
 
 static void
-affile_sd_queue(LogPipe *s, LogMessage *msg, const LogPathOptions *path_options)
+affile_sd_queue(LogPipe *s, LogMessage *msg, LogPathOptions *path_options)
 {
   AFFileSourceDriver *self = (AFFileSourceDriver *) s;
 

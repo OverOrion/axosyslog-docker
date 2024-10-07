@@ -117,7 +117,7 @@ _evt_tag_utmp_username(UtmpEntry *ut)
 }
 
 static void
-afuser_dd_queue(LogPipe *s, LogMessage *msg, const LogPathOptions *path_options)
+afuser_dd_queue(LogPipe *s, LogMessage *msg, LogPathOptions *path_options)
 {
   AFUserDestDriver *self = (AFUserDestDriver *) s;
   gchar buf[8192];

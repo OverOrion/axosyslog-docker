@@ -188,7 +188,7 @@ _py_init_object(PythonParser *self)
 }
 
 static gboolean
-python_parser_process(LogParser *s, LogMessage **pmsg, const LogPathOptions *path_options, const gchar *input,
+python_parser_process(LogParser *s, LogMessage **pmsg, LogPathOptions *path_options, const gchar *input,
                       gsize input_len)
 {
   PythonParser *self = (PythonParser *)s;

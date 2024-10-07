@@ -98,7 +98,7 @@ scanner_push_function(const gchar *name, const gchar *value, gssize value_length
 
 static gboolean
 xml_parser_process(LogParser *s, LogMessage **pmsg,
-                   const LogPathOptions *path_options,
+                   LogPathOptions *path_options,
                    const gchar *input, gsize input_len)
 {
   XMLParser *self = (XMLParser *) s;

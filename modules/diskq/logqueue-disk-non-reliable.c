@@ -386,7 +386,7 @@ _ensure_serialized_and_write_to_disk(LogQueueDiskNonReliable *self, LogMessage *
 }
 
 static inline void
-_push_tail_front_cache(LogQueueDiskNonReliable *self, LogMessage *msg, const LogPathOptions *path_options)
+_push_tail_front_cache(LogQueueDiskNonReliable *self, LogMessage *msg, LogPathOptions *path_options)
 {
   /* simple push never generates flow-control enabled entries to front_cache, they only get there
    * when rewinding the backlog */
@@ -400,7 +400,7 @@ _push_tail_front_cache(LogQueueDiskNonReliable *self, LogMessage *msg, const Log
 }
 
 static inline void
-_push_tail_flow_control_window(LogQueueDiskNonReliable *self, LogMessage *msg, const LogPathOptions *path_options)
+_push_tail_flow_control_window(LogQueueDiskNonReliable *self, LogMessage *msg, LogPathOptions *path_options)
 {
   g_queue_push_tail(self->flow_control_window, msg);
   g_queue_push_tail(self->flow_control_window, LOG_PATH_OPTIONS_TO_POINTER(path_options));
@@ -411,7 +411,7 @@ _push_tail_flow_control_window(LogQueueDiskNonReliable *self, LogMessage *msg, c
 }
 
 static inline gboolean
-_push_tail_disk(LogQueueDiskNonReliable *self, LogMessage *msg, const LogPathOptions *path_options,
+_push_tail_disk(LogQueueDiskNonReliable *self, LogMessage *msg, LogPathOptions *path_options,
                 GString *serialized_msg)
 {
   gboolean result = _ensure_serialized_and_write_to_disk(self, msg, serialized_msg);
@@ -427,7 +427,7 @@ _push_tail_disk(LogQueueDiskNonReliable *self, LogMessage *msg, const LogPathOpt
 }
 
 static void
-_push_tail(LogQueue *s, LogMessage *msg, const LogPathOptions *path_options)
+_push_tail(LogQueue *s, LogMessage *msg, LogPathOptions *path_options)
 {
   LogQueueDiskNonReliable *self = (LogQueueDiskNonReliable *)s;
 

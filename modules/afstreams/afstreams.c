@@ -157,7 +157,7 @@ afstreams_init_door(int hook_type G_GNUC_UNUSED, gpointer user_data)
 }
 
 static void
-afstreams_sd_queue(LogPipe *s, LogMessage *msg, const LogPathOptions *path_options)
+afstreams_sd_queue(LogPipe *s, LogMessage *msg, LogPathOptions *path_options)
 {
   log_msg_set_value_to_string(msg, LM_V_TRANSPORT, "local+sunstreams");
   log_src_driver_queue_method(s, msg, path_options);

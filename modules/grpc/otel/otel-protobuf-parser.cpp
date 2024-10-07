@@ -1450,7 +1450,7 @@ syslogng::grpc::otel::ProtobufParser::process(LogMessage *msg)
 }
 
 static gboolean
-_process(LogParser *s, LogMessage **pmsg, const LogPathOptions *path_options, const gchar *input, gsize input_len)
+_process(LogParser *s, LogMessage **pmsg, LogPathOptions *path_options, const gchar *input, gsize input_len)
 {
   LogMessage *msg = log_msg_make_writable(pmsg, path_options);
   return get_ProtobufParser(s)->process(msg);

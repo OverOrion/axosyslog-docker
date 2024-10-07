@@ -38,7 +38,7 @@ rewrite_guess_time_zone_set_time_stamp(LogRewrite *s, gint stamp)
 }
 
 static void
-_process(LogRewrite *s, LogMessage **pmsg, const LogPathOptions *path_options)
+_process(LogRewrite *s, LogMessage **pmsg, LogPathOptions *path_options)
 {
   RewriteGuessTimeZone *self = (RewriteGuessTimeZone *) s;
   LogMessage *msg;

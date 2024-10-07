@@ -271,7 +271,7 @@ grouping_parser_perform_grouping(GroupingParser *self, LogMessage *msg, Stateful
 
 gboolean
 grouping_parser_process_method(LogParser *s,
-                               LogMessage **pmsg, const LogPathOptions *path_options,
+                               LogMessage **pmsg, LogPathOptions *path_options,
                                const char *input, gsize input_len)
 {
   GroupingParser *self = (GroupingParser *) s;

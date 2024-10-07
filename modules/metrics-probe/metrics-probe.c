@@ -90,7 +90,7 @@ _calculate_increment(MetricsProbe *self, LogMessage *msg)
 }
 
 static gboolean
-_process(LogParser *s, LogMessage **pmsg, const LogPathOptions *path_options, const gchar *input, gsize input_len)
+_process(LogParser *s, LogMessage **pmsg, LogPathOptions *path_options, const gchar *input, gsize input_len)
 {
   MetricsProbe *self = (MetricsProbe *) s;
 

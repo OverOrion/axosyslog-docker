@@ -66,7 +66,7 @@ stateful_parser_emit_synthetic_list(StatefulParser *self, LogMessage **values, g
 }
 
 void
-_queue(LogPipe *s, LogMessage *msg, const LogPathOptions *path_options)
+_queue(LogPipe *s, LogMessage *msg, LogPathOptions *path_options)
 {
   StatefulParser *self = (StatefulParser *) s;
   LogPathOptions local_path_options;

@@ -279,7 +279,7 @@ affile_dw_deinit(LogPipe *s)
  * main thread.
  */
 static void
-affile_dw_queue(LogPipe *s, LogMessage *lm, const LogPathOptions *path_options)
+affile_dw_queue(LogPipe *s, LogMessage *lm, LogPathOptions *path_options)
 {
   AFFileDestWriter *self = (AFFileDestWriter *) s;
 
@@ -731,7 +731,7 @@ affile_dd_open_writer(gpointer args[])
 }
 
 static void
-affile_dd_queue(LogPipe *s, LogMessage *msg, const LogPathOptions *path_options)
+affile_dd_queue(LogPipe *s, LogMessage *msg, LogPathOptions *path_options)
 {
   AFFileDestDriver *self = (AFFileDestDriver *) s;
   AFFileDestWriter *next;

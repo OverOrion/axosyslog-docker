@@ -33,7 +33,7 @@
 #define ENTRIES_PER_MSG_IN_MEM_Q 3
 
 static inline void
-_push_to_memory_queue_tail(GQueue *queue, gint64 position, LogMessage *msg, const LogPathOptions *path_options)
+_push_to_memory_queue_tail(GQueue *queue, gint64 position, LogMessage *msg, LogPathOptions *path_options)
 {
   gint64 *allocated_position = g_malloc(sizeof(gint64));
   *allocated_position = position;
@@ -329,7 +329,7 @@ _is_space_available_in_front_cache(LogQueueDiskReliable *self)
 }
 
 static void
-_push_tail(LogQueue *s, LogMessage *msg, const LogPathOptions *path_options)
+_push_tail(LogQueue *s, LogMessage *msg, LogPathOptions *path_options)
 {
   LogQueueDiskReliable *self = (LogQueueDiskReliable *)s;
 

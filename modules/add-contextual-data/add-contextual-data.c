@@ -109,7 +109,7 @@ _add_context_data_to_message(gpointer pmsg, const ContextualDataRecord *record)
 
 static gboolean
 _process(LogParser *s, LogMessage **pmsg,
-         const LogPathOptions *path_options,
+         LogPathOptions *path_options,
          const gchar *input, gsize input_len)
 {
   AddContextualData *self = (AddContextualData *) s;

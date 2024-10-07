@@ -103,7 +103,7 @@ openbsd_close_newsyslog_socket(OpenBSDDriver *self)
 }
 
 static void
-_openbsd_sd_queue(LogPipe *s, LogMessage *msg, const LogPathOptions *path_options)
+_openbsd_sd_queue(LogPipe *s, LogMessage *msg, LogPathOptions *path_options)
 {
   log_msg_set_value_to_string(msg, LM_V_TRANSPORT, "local+openbsd");
   log_src_driver_queue_method(s, msg, path_options);

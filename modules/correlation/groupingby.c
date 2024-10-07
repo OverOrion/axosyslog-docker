@@ -132,7 +132,7 @@ _aggregate_context(GroupingParser *s, CorrelationContext *context)
 }
 
 static gboolean
-_evaluate_where(GroupingParser *s, LogMessage **pmsg, const LogPathOptions *path_options)
+_evaluate_where(GroupingParser *s, LogMessage **pmsg, LogPathOptions *path_options)
 {
   GroupingBy *self = (GroupingBy *) s;
 

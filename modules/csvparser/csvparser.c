@@ -274,7 +274,7 @@ _iterate_columns(CSVParser *self, CSVScanner *scanner, LogMessage *msg)
 }
 
 static gboolean
-csv_parser_process(LogParser *s, LogMessage **pmsg, const LogPathOptions *path_options, const gchar *input,
+csv_parser_process(LogParser *s, LogMessage **pmsg, LogPathOptions *path_options, const gchar *input,
                    gsize input_len)
 {
   CSVParser *self = (CSVParser *) s;

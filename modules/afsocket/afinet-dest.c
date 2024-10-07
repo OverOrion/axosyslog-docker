@@ -609,7 +609,7 @@ afinet_dd_construct_ip_packet(AFInetDestDriver *self, LogMessage *msg, GString *
 }
 
 static gboolean
-afinet_dd_spoof_write_message(AFInetDestDriver *self, LogMessage *msg, const LogPathOptions *path_options)
+afinet_dd_spoof_write_message(AFInetDestDriver *self, LogMessage *msg, LogPathOptions *path_options)
 {
   g_assert(self->super.transport_mapper->sock_type == SOCK_DGRAM);
 
@@ -660,7 +660,7 @@ _is_spoof_source_enabled(AFInetDestDriver *self)
 #endif
 
 static void
-afinet_dd_queue(LogPipe *s, LogMessage *msg, const LogPathOptions *path_options)
+afinet_dd_queue(LogPipe *s, LogMessage *msg, LogPathOptions *path_options)
 {
 #if SYSLOG_NG_ENABLE_SPOOF_SOURCE
   AFInetDestDriver *self = (AFInetDestDriver *) s;

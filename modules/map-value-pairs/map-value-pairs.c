@@ -35,7 +35,7 @@ _map_name_values(const gchar *name,
 }
 
 static gboolean
-_process(LogParser *s, LogMessage **pmsg, const LogPathOptions *path_options,
+_process(LogParser *s, LogMessage **pmsg, LogPathOptions *path_options,
          const gchar *input, gsize input_len)
 {
   MapValuePairs *self = (MapValuePairs *) s;

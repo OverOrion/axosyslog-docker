@@ -326,7 +326,7 @@ json_tokener_error_desc(enum json_tokener_error err)
 #endif
 
 static gboolean
-json_parser_process(LogParser *s, LogMessage **pmsg, const LogPathOptions *path_options, const gchar *input,
+json_parser_process(LogParser *s, LogMessage **pmsg, LogPathOptions *path_options, const gchar *input,
                     gsize input_len)
 {
   JSONParser *self = (JSONParser *) s;

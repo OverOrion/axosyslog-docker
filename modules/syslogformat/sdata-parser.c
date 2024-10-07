@@ -25,7 +25,7 @@
 
 
 static gboolean
-sdata_parser_process(LogParser *s, LogMessage **pmsg, const LogPathOptions *path_options, const gchar *input,
+sdata_parser_process(LogParser *s, LogMessage **pmsg, LogPathOptions *path_options, const gchar *input,
                      gsize input_len)
 {
   SDataParser *self = (SDataParser *) s;

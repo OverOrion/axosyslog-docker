@@ -259,7 +259,7 @@ afprogram_sd_exit(pid_t pid, int status, gpointer s)
 }
 
 static void
-afprogram_sd_queue(LogPipe *s, LogMessage *msg, const LogPathOptions *path_options)
+afprogram_sd_queue(LogPipe *s, LogMessage *msg, LogPathOptions *path_options)
 {
   log_msg_set_value_to_string(msg, LM_V_TRANSPORT, "local+program");
   log_src_driver_queue_method(s, msg, path_options);

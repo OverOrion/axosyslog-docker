@@ -88,7 +88,7 @@ _mmdb_load_entry_data_list(GeoIPParser *self, const gchar *input, MMDB_entry_dat
 
 static gboolean
 maxminddb_parser_process(LogParser *s, LogMessage **pmsg,
-                         const LogPathOptions *path_options,
+                         LogPathOptions *path_options,
                          const gchar *input, gsize input_len)
 {
   GeoIPParser *self = (GeoIPParser *) s;

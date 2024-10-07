@@ -61,7 +61,7 @@ void file_reader_init_instance(FileReader *self, const gchar *filename, FileRead
 gboolean file_reader_init_method(LogPipe *s);
 gboolean file_reader_deinit_method(LogPipe *s);
 void file_reader_free_method(LogPipe *s);
-void file_reader_queue_method(LogPipe *s, LogMessage *msg, const LogPathOptions *path_options);
+void file_reader_queue_method(LogPipe *s, LogMessage *msg, LogPathOptions *path_options);
 void file_reader_notify_method(LogPipe *s, gint notify_code, gpointer user_data);
 
 void file_reader_remove_persist_state(FileReader *self);

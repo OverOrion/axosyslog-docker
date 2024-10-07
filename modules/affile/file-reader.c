@@ -289,7 +289,7 @@ file_reader_notify_method(LogPipe *s, gint notify_code, gpointer user_data)
 }
 
 void
-file_reader_queue_method(LogPipe *s, LogMessage *msg, const LogPathOptions *path_options)
+file_reader_queue_method(LogPipe *s, LogMessage *msg, LogPathOptions *path_options)
 {
   FileReader *self = (FileReader *)s;
 

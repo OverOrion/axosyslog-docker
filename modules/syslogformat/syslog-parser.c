@@ -32,7 +32,7 @@ syslog_parser_set_drop_invalid(LogParser *s, gboolean drop_invalid)
 }
 
 static gboolean
-syslog_parser_process(LogParser *s, LogMessage **pmsg, const LogPathOptions *path_options, const gchar *input,
+syslog_parser_process(LogParser *s, LogMessage **pmsg, LogPathOptions *path_options, const gchar *input,
                       gsize input_len)
 {
   SyslogParser *self = (SyslogParser *) s;

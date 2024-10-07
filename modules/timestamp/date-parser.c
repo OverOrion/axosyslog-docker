@@ -162,7 +162,7 @@ _store_timestamp(DateParser *self, LogMessage *msg, UnixTime *time_stamp)
 static gboolean
 date_parser_process(LogParser *s,
                     LogMessage **pmsg,
-                    const LogPathOptions *path_options,
+                    LogPathOptions *path_options,
                     const gchar *input,
                     gsize input_len)
 {

@@ -269,7 +269,7 @@ log_queue_disk_peek_message(LogQueueDisk *self)
 }
 
 void
-log_queue_disk_drop_message(LogQueueDisk *self, LogMessage *msg, const LogPathOptions *path_options)
+log_queue_disk_drop_message(LogQueueDisk *self, LogMessage *msg, LogPathOptions *path_options)
 {
   log_queue_dropped_messages_inc(&self->super);
 

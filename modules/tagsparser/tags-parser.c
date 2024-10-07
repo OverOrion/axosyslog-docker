@@ -34,7 +34,7 @@ typedef struct _TagsParser
 } TagsParser;
 
 static gboolean
-_process(LogParser *s, LogMessage **pmsg, const LogPathOptions *path_options, const gchar *input,
+_process(LogParser *s, LogMessage **pmsg, LogPathOptions *path_options, const gchar *input,
          gsize input_len)
 {
   LogMessage *msg = log_msg_make_writable(pmsg, path_options);

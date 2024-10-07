@@ -1350,7 +1350,7 @@ afsocket_sd_deinit_method(LogPipe *s)
 }
 
 static void
-afsocket_sd_queue(LogPipe *s, LogMessage *msg, const LogPathOptions *path_options)
+afsocket_sd_queue(LogPipe *s, LogMessage *msg, LogPathOptions *path_options)
 {
   AFSocketSourceDriver *self = (AFSocketSourceDriver *) s;
   const gchar *transport_name;

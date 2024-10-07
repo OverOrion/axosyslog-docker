@@ -81,7 +81,7 @@ scanner_push_function(const gchar *name, const gchar *value, gssize value_length
 }
 
 static gboolean
-_process(LogParser *s, LogMessage **pmsg, const LogPathOptions *path_options, const gchar *input, gsize input_len)
+_process(LogParser *s, LogMessage **pmsg, LogPathOptions *path_options, const gchar *input, gsize input_len)
 {
   XMLParser *self = (XMLParser *) s;
   LogMessage *msg = log_msg_make_writable(pmsg, path_options);

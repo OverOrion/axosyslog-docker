@@ -59,7 +59,7 @@ _set_tag(LogRewriteSetTag *self, LogMessage *msg)
 }
 
 static void
-_process(LogRewrite *s, LogMessage **pmsg, const LogPathOptions *path_options)
+_process(LogRewrite *s, LogMessage **pmsg, LogPathOptions *path_options)
 {
   LogRewriteSetTag *self = (LogRewriteSetTag *) s;
 

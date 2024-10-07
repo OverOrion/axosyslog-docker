@@ -313,8 +313,9 @@ log_msg_write_protect(LogMessage *self)
 }
 
 LogMessage *
-log_msg_make_writable(LogMessage **pself, const LogPathOptions *path_options)
+log_msg_make_writable(LogMessage **pself, LogPathOptions *path_options)
 {
+  filterx_eval_sync_message(&path_options->filterx_context, pself, path_options);
   if (log_msg_is_write_protected(*pself))
     {
       LogMessage *new;
@@ -506,7 +507,7 @@ log_msg_is_value_from_macro(const gchar *value)
 
 
 static void
-log_msg_init_queue_node(LogMessage *msg, LogMessageQueueNode *node, const LogPathOptions *path_options)
+log_msg_init_queue_node(LogMessage *msg, LogMessageQueueNode *node, LogPathOptions *path_options)
 {
   INIT_IV_LIST_HEAD(&node->list);
   node->ack_needed = path_options->ack_needed;
@@ -523,7 +524,7 @@ log_msg_init_queue_node(LogMessage *msg, LogMessageQueueNode *node, const LogPat
  * the related fields are _NOT_ locked).
  */
 LogMessageQueueNode *
-log_msg_alloc_queue_node(LogMessage *msg, const LogPathOptions *path_options)
+log_msg_alloc_queue_node(LogMessage *msg, LogPathOptions *path_options)
 {
   LogMessageQueueNode *node;
 
@@ -554,7 +555,7 @@ log_msg_alloc_queue_node(LogMessage *msg, const LogPathOptions *path_options)
 }
 
 LogMessageQueueNode *
-log_msg_alloc_dynamic_queue_node(LogMessage *msg, const LogPathOptions *path_options)
+log_msg_alloc_dynamic_queue_node(LogMessage *msg, LogPathOptions *path_options)
 {
   LogMessageQueueNode *node;
   node = g_slice_new(LogMessageQueueNode);
@@ -1494,7 +1495,7 @@ log_msg_clone_ack(LogMessage *msg, AckType ack_type)
  * Clone a copy-on-write (cow) copy of a log message.
  */
 LogMessage *
-log_msg_clone_cow(LogMessage *msg, const LogPathOptions *path_options)
+log_msg_clone_cow(LogMessage *msg, LogPathOptions *path_options)
 {
   LogMessage *self = log_msg_alloc(0);
   gsize allocated_bytes = self->allocated_bytes;
@@ -1645,7 +1646,7 @@ log_msg_free(LogMessage *self)
  * unable to process this message. It acks and unrefs the message.
  **/
 void
-log_msg_drop(LogMessage *msg, const LogPathOptions *path_options, AckType ack_type)
+log_msg_drop(LogMessage *msg, LogPathOptions *path_options, AckType ack_type)
 {
   log_msg_ack(msg, path_options, ack_type);
   log_msg_unref(msg);
@@ -1762,7 +1763,7 @@ log_msg_unref(LogMessage *self)
  * This function increments the number of required acknowledges.
  **/
 void
-log_msg_add_ack(LogMessage *self, const LogPathOptions *path_options)
+log_msg_add_ack(LogMessage *self, LogPathOptions *path_options)
 {
   if (path_options->ack_needed)
     {
@@ -1790,7 +1791,7 @@ log_msg_add_ack(LogMessage *self, const LogPathOptions *path_options)
  * queue further messages.
  **/
 void
-log_msg_ack(LogMessage *self, const LogPathOptions *path_options, AckType ack_type)
+log_msg_ack(LogMessage *self, LogPathOptions *path_options, AckType ack_type)
 {
   gint old_value;
 
@@ -1825,8 +1826,8 @@ log_msg_ack(LogMessage *self, const LogPathOptions *path_options, AckType ack_ty
  * ACKed and a new path options structure is returned that can be used
  * to send to further consuming pipes.
  */
-const LogPathOptions *
-log_msg_break_ack(LogMessage *msg, const LogPathOptions *path_options, LogPathOptions *local_path_options)
+LogPathOptions *
+log_msg_break_ack(LogMessage *msg, LogPathOptions *path_options, LogPathOptions *local_path_options)
 {
   /* NOTE: in case the user requested flow control, we can't break the
    * ACK chain, as that would lead to early acks, that would cause
@@ -1895,7 +1896,7 @@ log_msg_refcache_start_producer(LogMessage *self)
  *
  */
 void
-log_msg_refcache_start_consumer(LogMessage *self, const LogPathOptions *path_options)
+log_msg_refcache_start_consumer(LogMessage *self, LogPathOptions *path_options)
 {
   g_assert(logmsg_current == NULL);
 

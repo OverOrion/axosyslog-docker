@@ -81,7 +81,7 @@ _set_msg_severity(LogMessage *msg, const guint16 severity)
 }
 
 static void
-log_rewrite_set_severity_process(LogRewrite *s, LogMessage **pmsg, const LogPathOptions *path_options)
+log_rewrite_set_severity_process(LogRewrite *s, LogMessage **pmsg, LogPathOptions *path_options)
 {
   ScratchBuffersMarker marker;
   GString *result = scratch_buffers_alloc_and_mark(&marker);

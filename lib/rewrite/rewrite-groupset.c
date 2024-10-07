@@ -69,7 +69,7 @@ log_rewrite_groupunset_foreach_func(const gchar *name, LogMessageValueType type,
 }
 
 static void
-log_rewrite_groupset_process(LogRewrite *s, LogMessage **msg, const LogPathOptions *path_options)
+log_rewrite_groupset_process(LogRewrite *s, LogMessage **msg, LogPathOptions *path_options)
 {
   LogRewriteGroupSet *self = (LogRewriteGroupSet *) s;
   GlobalConfig *cfg = log_pipe_get_config(&s->super);

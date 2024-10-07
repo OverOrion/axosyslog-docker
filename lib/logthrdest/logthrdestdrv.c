@@ -1159,7 +1159,7 @@ _lookup_worker(LogThreadedDestDriver *self, LogMessage *msg)
  */
 static void
 log_threaded_dest_driver_queue(LogPipe *s, LogMessage *msg,
-                               const LogPathOptions *path_options)
+                               LogPathOptions *path_options)
 {
   LogThreadedDestDriver *self = (LogThreadedDestDriver *)s;
   LogThreadedDestWorker *dw = _lookup_worker(self, msg);

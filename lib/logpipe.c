@@ -26,7 +26,7 @@
 #include "cfg-tree.h"
 #include "cfg-walker.h"
 
-gboolean (*pipe_single_step_hook)(LogPipe *pipe, LogMessage *msg, const LogPathOptions *path_options);
+gboolean (*pipe_single_step_hook)(LogPipe *pipe, LogMessage *msg, LogPathOptions *path_options);
 
 void log_path_options_init(LogPathOptions *self)
 {
@@ -34,7 +34,7 @@ void log_path_options_init(LogPathOptions *self)
   self->flow_control_requested = FALSE;
   self->matched = NULL;
   self->lpo_parent_junction = NULL;
-  filterx_eval_init_context(self->filterx_context, NULL);
+  filterx_eval_init_context(&self->filterx_context, NULL);
 }
 
 void log_path_options_init_noack(LogPathOptions *self)
@@ -43,7 +43,7 @@ void log_path_options_init_noack(LogPathOptions *self)
   self->flow_control_requested = FALSE;
   self->matched = NULL;
   self->lpo_parent_junction = NULL;
-  filterx_eval_init_context(self->filterx_context, NULL);
+  filterx_eval_init_context(&self->filterx_context, NULL);
 }
 
 EVTTAG *
@@ -202,7 +202,7 @@ log_pipe_add_info(LogPipe *self, const gchar *info)
 #ifdef __linux__
 
 void
-__log_pipe_forward_msg(LogPipe *self, LogMessage *msg, const LogPathOptions *path_options)
+__log_pipe_forward_msg(LogPipe *self, LogMessage *msg, LogPathOptions *path_options)
 __attribute__((alias("log_pipe_forward_msg")));
 
 #endif

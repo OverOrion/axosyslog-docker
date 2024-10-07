@@ -37,7 +37,7 @@ _init_stats_keys(MetricsPipe *self, StatsClusterKey *ingress_sc_key, StatsCluste
 }
 
 static void
-_queue(LogPipe *s, LogMessage *msg, const LogPathOptions *path_options)
+_queue(LogPipe *s, LogMessage *msg, LogPathOptions *path_options)
 {
   MetricsPipe *self = (MetricsPipe *) s;
 

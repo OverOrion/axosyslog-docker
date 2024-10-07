@@ -25,7 +25,7 @@
 #include "template/eval.h"
 
 static void
-_reinject_message(LogPipe *front_pipe, LogMessage *msg, const LogPathOptions *path_options)
+_reinject_message(LogPipe *front_pipe, LogMessage *msg, LogPathOptions *path_options)
 {
   if (front_pipe)
     log_pipe_queue(front_pipe, msg, path_options);
@@ -224,7 +224,7 @@ _flush_batch(gpointer s)
 
 static void
 _queue_thread(LogScheduler *self, LogSchedulerThreadState *thread_state, LogMessage *msg,
-              const LogPathOptions *path_options)
+              LogPathOptions *path_options)
 {
   if (thread_state->num_messages == 0)
     main_loop_worker_register_batch_callback(&thread_state->batch_callback);
@@ -289,7 +289,7 @@ log_scheduler_deinit(LogScheduler *self)
 }
 
 void
-log_scheduler_push(LogScheduler *self, LogMessage *msg, const LogPathOptions *path_options)
+log_scheduler_push(LogScheduler *self, LogMessage *msg, LogPathOptions *path_options)
 {
   gint thread_index = main_loop_worker_get_thread_index();
 
@@ -349,7 +349,7 @@ log_scheduler_deinit(LogScheduler *self)
 }
 
 void
-log_scheduler_push(LogScheduler *self, LogMessage *msg, const LogPathOptions *path_options)
+log_scheduler_push(LogScheduler *self, LogMessage *msg, LogPathOptions *path_options)
 {
   _reinject_message(self->front_pipe, msg, path_options);
 }

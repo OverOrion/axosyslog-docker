@@ -56,7 +56,7 @@ _deinit(LogPipe *s)
 }
 
 static void
-_queue(LogPipe *s, LogMessage *msg, const LogPathOptions *path_options)
+_queue(LogPipe *s, LogMessage *msg, LogPathOptions *path_options)
 {
   LogSchedulerPipe *self = (LogSchedulerPipe *) s;
 

@@ -44,7 +44,7 @@ log_parser_clone_settings(LogParser *self, LogParser *cloned)
 }
 
 gboolean
-log_parser_process_message(LogParser *self, LogMessage **pmsg, const LogPathOptions *path_options)
+log_parser_process_message(LogParser *self, LogMessage **pmsg, LogPathOptions *path_options)
 {
   LogMessage *msg = *pmsg;
   gboolean success;
@@ -86,7 +86,7 @@ log_parser_process_message(LogParser *self, LogMessage **pmsg, const LogPathOpti
 }
 
 void
-log_parser_queue_method(LogPipe *s, LogMessage *msg, const LogPathOptions *path_options)
+log_parser_queue_method(LogPipe *s, LogMessage *msg, LogPathOptions *path_options)
 {
   LogParser *self = (LogParser *) s;
   gboolean success;

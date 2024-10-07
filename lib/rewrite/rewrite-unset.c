@@ -36,7 +36,7 @@ struct _LogRewriteUnset
 };
 
 static void
-log_rewrite_unset_process(LogRewrite *s, LogMessage **pmsg, const LogPathOptions *path_options)
+log_rewrite_unset_process(LogRewrite *s, LogMessage **pmsg, LogPathOptions *path_options)
 {
   LogRewriteUnset *self = (LogRewriteUnset *) s;
 

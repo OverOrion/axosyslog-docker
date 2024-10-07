@@ -35,7 +35,7 @@ struct _LogRewriteUnsetMatches
 };
 
 static void
-log_rewrite_unset_matches_process(LogRewrite *s, LogMessage **pmsg, const LogPathOptions *path_options)
+log_rewrite_unset_matches_process(LogRewrite *s, LogMessage **pmsg, LogPathOptions *path_options)
 {
   log_msg_make_writable(pmsg, path_options);
   log_msg_clear_matches(*pmsg);

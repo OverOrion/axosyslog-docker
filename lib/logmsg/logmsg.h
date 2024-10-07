@@ -325,8 +325,8 @@ log_msg_is_write_protected(const LogMessage *self)
   return self->write_protected;
 }
 
-LogMessage *log_msg_clone_cow(LogMessage *msg, const LogPathOptions *path_options);
-LogMessage *log_msg_make_writable(LogMessage **pmsg, const LogPathOptions *path_options);
+LogMessage *log_msg_clone_cow(LogMessage *msg, LogPathOptions *path_options);
+LogMessage *log_msg_make_writable(LogMessage **pmsg, LogPathOptions *path_options);
 
 gboolean log_msg_write(LogMessage *self, SerializeArchive *sa);
 gboolean log_msg_read(LogMessage *self, SerializeArchive *sa);
@@ -525,8 +525,8 @@ void log_msg_set_daddr(LogMessage *self, GSockAddr *daddr);
 void log_msg_set_daddr_ref(LogMessage *self, GSockAddr *daddr);
 
 
-LogMessageQueueNode *log_msg_alloc_queue_node(LogMessage *msg, const LogPathOptions *path_options);
-LogMessageQueueNode *log_msg_alloc_dynamic_queue_node(LogMessage *msg, const LogPathOptions *path_options);
+LogMessageQueueNode *log_msg_alloc_queue_node(LogMessage *msg, LogPathOptions *path_options);
+LogMessageQueueNode *log_msg_alloc_dynamic_queue_node(LogMessage *msg, LogPathOptions *path_options);
 void log_msg_free_queue_node(LogMessageQueueNode *node);
 
 void log_msg_clear(LogMessage *self);
@@ -538,14 +538,14 @@ LogMessage *log_msg_new_internal(gint prio, const gchar *msg);
 LogMessage *log_msg_new_empty(void);
 LogMessage *log_msg_new_local(void);
 
-void log_msg_add_ack(LogMessage *msg, const LogPathOptions *path_options);
-void log_msg_ack(LogMessage *msg, const LogPathOptions *path_options, AckType ack_type);
-void log_msg_drop(LogMessage *msg, const LogPathOptions *path_options, AckType ack_type);
-const LogPathOptions *log_msg_break_ack(LogMessage *msg, const LogPathOptions *path_options,
+void log_msg_add_ack(LogMessage *msg, LogPathOptions *path_options);
+void log_msg_ack(LogMessage *msg, LogPathOptions *path_options, AckType ack_type);
+void log_msg_drop(LogMessage *msg, LogPathOptions *path_options, AckType ack_type);
+LogPathOptions *log_msg_break_ack(LogMessage *msg, LogPathOptions *path_options,
                                         LogPathOptions *local_path_options);
 
 void log_msg_refcache_start_producer(LogMessage *self);
-void log_msg_refcache_start_consumer(LogMessage *self, const LogPathOptions *path_options);
+void log_msg_refcache_start_consumer(LogMessage *self, LogPathOptions *path_options);
 void log_msg_refcache_stop(void);
 
 void log_msg_registry_init(void);

@@ -46,15 +46,15 @@ log_filterx_pipe_init(LogPipe *s)
 
 
 static void
-log_filterx_pipe_queue(LogPipe *s, LogMessage *msg, const LogPathOptions *path_options)
+log_filterx_pipe_queue(LogPipe *s, LogMessage *msg, LogPathOptions *path_options)
 {
   LogFilterXPipe *self = (LogFilterXPipe *) s;
-  FilterXEvalContext eval_context;
   LogPathOptions local_path_options;
+  log_path_options_init(&local_path_options);
   FilterXEvalResult eval_res;
 
+  filterx_eval_init_context(&local_path_options.filterx_context, &path_options->filterx_context);
   path_options = log_path_options_chain(&local_path_options, path_options);
-  filterx_eval_init_context(&eval_context, path_options->filterx_context);
 
   msg_trace(">>>>>> filterx rule evaluation begin",
             evt_tag_str("rule", self->name),
@@ -62,16 +62,15 @@ log_filterx_pipe_queue(LogPipe *s, LogMessage *msg, const LogPathOptions *path_o
             evt_tag_msg_reference(msg));
 
   NVTable *payload = nv_table_ref(msg->payload);
-  eval_res = filterx_eval_exec(&eval_context, self->block, msg);
+  eval_res = filterx_eval_exec(&path_options->filterx_context, self->block, msg);
 
   msg_trace("<<<<<< filterx rule evaluation result",
             filterx_format_eval_result(eval_res),
             evt_tag_str("rule", self->name),
             log_pipe_location_tag(s),
-            evt_tag_int("dirty", filterx_scope_is_dirty(eval_context.scope)),
+            evt_tag_int("dirty", filterx_scope_is_dirty((&path_options->filterx_context)->scope)),
             evt_tag_msg_reference(msg));
 
-  local_path_options.filterx_context = &eval_context;
   switch (eval_res)
     {
     case FXE_SUCCESS:
@@ -91,7 +90,7 @@ log_filterx_pipe_queue(LogPipe *s, LogMessage *msg, const LogPathOptions *path_o
       break;
     }
 
-  filterx_eval_deinit_context(&eval_context);
+//  filterx_eval_deinit_context(&eval_context);
   nv_table_unref(payload);
 }
 

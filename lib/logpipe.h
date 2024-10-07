@@ -219,7 +219,7 @@ struct _LogPathOptions
 
   gboolean *matched;
   const LogPathOptions *lpo_parent_junction;
-  FilterXEvalContext *filterx_context;
+  FilterXEvalContext filterx_context;
 };
 
 void log_path_options_init(LogPathOptions *self);
@@ -230,9 +230,13 @@ void log_path_options_init_noack(LogPathOptions *self);
  * Embed a step in our LogPathOptions chain.
  */
 static inline LogPathOptions *
-log_path_options_chain(LogPathOptions *local_path_options, const LogPathOptions *lpo_previous_hop)
+log_path_options_chain(LogPathOptions *local_path_options, LogPathOptions *lpo_previous_hop)
 {
-  *local_path_options = *lpo_previous_hop;
+  local_path_options->ack_needed = lpo_previous_hop->ack_needed;
+  local_path_options->flow_control_requested = lpo_previous_hop->flow_control_requested;
+  local_path_options->matched = lpo_previous_hop->matched;
+  local_path_options->lpo_parent_junction = lpo_previous_hop->lpo_parent_junction;
+  filterx_eval_init_context(&local_path_options->filterx_context, &lpo_previous_hop->filterx_context);
   return local_path_options;
 }
 
@@ -300,7 +304,7 @@ struct _LogPipe
   GAtomicCounter ref_cnt;
   gint32 flags;
 
-  void (*queue)(LogPipe *self, LogMessage *msg, const LogPathOptions *path_options);
+  void (*queue)(LogPipe *self, LogMessage *msg, LogPathOptions *path_options);
 
   GlobalConfig *cfg;
   LogExprNode *expr_node;
@@ -347,7 +351,7 @@ struct _LogPipe
  */
 G_STATIC_ASSERT(G_STRUCT_OFFSET(LogPipe, queue) - G_STRUCT_OFFSET(LogPipe, flags) <= 4);
 
-extern gboolean (*pipe_single_step_hook)(LogPipe *pipe, LogMessage *msg, const LogPathOptions *path_options);
+extern gboolean (*pipe_single_step_hook)(LogPipe *pipe, LogMessage *msg, LogPathOptions *path_options);
 
 LogPipe *log_pipe_ref(LogPipe *self);
 gboolean log_pipe_unref(LogPipe *self);
@@ -430,10 +434,10 @@ log_pipe_post_config_init(LogPipe *s)
 }
 
 static inline void
-log_pipe_queue(LogPipe *s, LogMessage *msg, const LogPathOptions *path_options);
+log_pipe_queue(LogPipe *s, LogMessage *msg, LogPathOptions *path_options);
 
 static inline void
-log_pipe_forward_msg(LogPipe *self, LogMessage *msg, const LogPathOptions *path_options)
+log_pipe_forward_msg(LogPipe *self, LogMessage *msg, LogPathOptions *path_options)
 {
   if (self->pipe_next)
     {
@@ -446,10 +450,12 @@ log_pipe_forward_msg(LogPipe *self, LogMessage *msg, const LogPathOptions *path_
 }
 
 static inline void
-log_pipe_queue(LogPipe *s, LogMessage *msg, const LogPathOptions *path_options)
+log_pipe_queue(LogPipe *s, LogMessage *msg, LogPathOptions *path_options)
 {
   LogPathOptions local_path_options;
+  log_path_options_init(&local_path_options);
   g_assert((s->flags & PIF_INITIALIZED) != 0);
+  path_options = log_path_options_chain(&local_path_options, path_options);
 
   if (G_UNLIKELY(pipe_single_step_hook))
     {
@@ -461,11 +467,10 @@ log_pipe_queue(LogPipe *s, LogMessage *msg, const LogPathOptions *path_options)
     }
 
   if ((s->flags & PIF_SYNC_FILTERX))
-    filterx_eval_sync_message(path_options->filterx_context, &msg, path_options);
+    filterx_eval_sync_message(&path_options->filterx_context, &msg, path_options);
 
   if (G_UNLIKELY(s->flags & (PIF_HARD_FLOW_CONTROL | PIF_JUNCTION_END | PIF_CONDITIONAL_MIDPOINT)))
     {
-      path_options = log_path_options_chain(&local_path_options, path_options);
       if (s->flags & PIF_HARD_FLOW_CONTROL)
         {
           local_path_options.flow_control_requested = 1;

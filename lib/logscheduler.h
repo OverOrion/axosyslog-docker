@@ -75,7 +75,7 @@ typedef struct _LogScheduler
 gboolean log_scheduler_init(LogScheduler *self);
 void log_scheduler_deinit(LogScheduler *self);
 
-void log_scheduler_push(LogScheduler *self, LogMessage *msg, const LogPathOptions *path_options);
+void log_scheduler_push(LogScheduler *self, LogMessage *msg, LogPathOptions *path_options);
 LogScheduler *log_scheduler_new(LogSchedulerOptions *options, LogPipe *front_pipe);
 void log_scheduler_free(LogScheduler *self);
 

@@ -23,6 +23,7 @@
 #include "filterx/filterx-eval.h"
 #include "filterx/filterx-error.h"
 #include "filterx/filterx-expr.h"
+#include "filterx/filterx-scope.h"
 #include "logpipe.h"
 #include "scratch-buffers.h"
 #include "tls-support.h"
@@ -191,6 +192,7 @@ filterx_eval_init_context(FilterXEvalContext *context, FilterXEvalContext *previ
   memset(context, 0, sizeof(*context));
   context->template_eval_options = DEFAULT_TEMPLATE_EVAL_OPTIONS;
   context->scope = scope;
+  g_assert(scope);
 
   if (previous_context)
     context->weak_refs = previous_context->weak_refs;

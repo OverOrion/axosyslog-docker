@@ -79,7 +79,7 @@ struct _LogQueue
   gboolean (*keep_on_reload)(LogQueue *self);
   gint64 (*get_length)(LogQueue *self);
   gboolean (*is_empty_racy)(LogQueue *self);
-  void (*push_tail)(LogQueue *self, LogMessage *msg, const LogPathOptions *path_options);
+  void (*push_tail)(LogQueue *self, LogMessage *msg, LogPathOptions *path_options);
   LogMessage *(*pop_head)(LogQueue *self, LogPathOptions *path_options);
   LogMessage *(*peek_head)(LogQueue *self);
   void (*ack_backlog)(LogQueue *self, gint n);
@@ -113,7 +113,7 @@ log_queue_is_empty_racy(LogQueue *self)
 }
 
 static inline void
-log_queue_push_tail(LogQueue *self, LogMessage *msg, const LogPathOptions *path_options)
+log_queue_push_tail(LogQueue *self, LogMessage *msg, LogPathOptions *path_options)
 {
   self->push_tail(self, msg, path_options);
 }

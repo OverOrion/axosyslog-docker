@@ -55,7 +55,7 @@ log_rewrite_set_pri_convert_pri(const gchar *pri_text)
 }
 
 static void
-log_rewrite_set_pri_process(LogRewrite *s, LogMessage **pmsg, const LogPathOptions *path_options)
+log_rewrite_set_pri_process(LogRewrite *s, LogMessage **pmsg, LogPathOptions *path_options)
 {
   LogRewriteSetPri *self = (LogRewriteSetPri *) s;
   GString *result = scratch_buffers_alloc();

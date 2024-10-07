@@ -61,7 +61,7 @@ filter_expr_eval(FilterExprNode *self, LogMessage *msg)
 gboolean
 filter_expr_eval_root_with_context(FilterExprNode *self, LogMessage **msg, gint num_msg,
                                    LogTemplateEvalOptions *options,
-                                   const LogPathOptions *path_options)
+                                   LogPathOptions *path_options)
 {
   g_assert(num_msg > 0);
 
@@ -72,7 +72,7 @@ filter_expr_eval_root_with_context(FilterExprNode *self, LogMessage **msg, gint 
 }
 
 gboolean
-filter_expr_eval_root(FilterExprNode *self, LogMessage **msg, const LogPathOptions *path_options)
+filter_expr_eval_root(FilterExprNode *self, LogMessage **msg, LogPathOptions *path_options)
 {
   return filter_expr_eval_root_with_context(self, msg, 1, &DEFAULT_TEMPLATE_EVAL_OPTIONS, path_options);
 }

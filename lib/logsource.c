@@ -629,7 +629,7 @@ _get_pid_string(void)
 }
 
 static void
-log_source_queue(LogPipe *s, LogMessage *msg, const LogPathOptions *path_options)
+log_source_queue(LogPipe *s, LogMessage *msg, LogPathOptions *path_options)
 {
   LogSource *self = (LogSource *) s;
   gint i;

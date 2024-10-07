@@ -76,7 +76,7 @@ void filterx_eval_init_context(FilterXEvalContext *context, FilterXEvalContext *
 void filterx_eval_deinit_context(FilterXEvalContext *context);
 
 static inline void
-filterx_eval_sync_message(FilterXEvalContext *context, LogMessage **pmsg, const LogPathOptions *path_options)
+filterx_eval_sync_message(FilterXEvalContext *context, LogMessage **pmsg, LogPathOptions *path_options)
 {
   if (!context)
     return;
@@ -89,7 +89,7 @@ filterx_eval_sync_message(FilterXEvalContext *context, LogMessage **pmsg, const 
 }
 
 static inline void
-filterx_eval_prepare_for_fork(FilterXEvalContext *context, LogMessage **pmsg, const LogPathOptions *path_options)
+filterx_eval_prepare_for_fork(FilterXEvalContext *context, LogMessage **pmsg, LogPathOptions *path_options)
 {
   filterx_eval_sync_message(context, pmsg, path_options);
   if (context)

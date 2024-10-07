@@ -293,7 +293,7 @@ log_queue_fifo_move_input(gpointer user_data)
 
 /* lock must be held */
 static inline gboolean
-_message_has_to_be_dropped(LogQueueFifo *self, const LogPathOptions *path_options)
+_message_has_to_be_dropped(LogQueueFifo *self, LogPathOptions *path_options)
 {
   return !path_options->flow_control_requested
          && log_queue_fifo_get_non_flow_controlled_length(self) >= self->log_fifo_size;
@@ -311,7 +311,7 @@ _message_has_to_be_dropped(LogQueueFifo *self, const LogPathOptions *path_option
  * NOTE: It consumes the reference passed by the caller.
  **/
 static void
-log_queue_fifo_push_tail(LogQueue *s, LogMessage *msg, const LogPathOptions *path_options)
+log_queue_fifo_push_tail(LogQueue *s, LogMessage *msg, LogPathOptions *path_options)
 {
   LogQueueFifo *self = (LogQueueFifo *) s;
   gint thread_index;

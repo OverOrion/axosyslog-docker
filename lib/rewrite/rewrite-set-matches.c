@@ -46,7 +46,7 @@ log_rewrite_set_matches_get_template_options(LogRewrite *s)
 }
 
 static void
-log_rewrite_set_matches_process(LogRewrite *s, LogMessage **pmsg, const LogPathOptions *path_options)
+log_rewrite_set_matches_process(LogRewrite *s, LogMessage **pmsg, LogPathOptions *path_options)
 {
   LogRewriteSetMatches *self = (LogRewriteSetMatches *) s;
   GString *result;

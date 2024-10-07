@@ -47,7 +47,7 @@ log_rewrite_subst_get_matcher_options(LogRewrite *s)
 }
 
 void
-log_rewrite_subst_process(LogRewrite *s, LogMessage **pmsg, const LogPathOptions *path_options)
+log_rewrite_subst_process(LogRewrite *s, LogMessage **pmsg, LogPathOptions *path_options)
 {
   LogRewriteSubst *self = (LogRewriteSubst *) s;
   LogMessage *msg;

@@ -80,7 +80,7 @@ _set_msg_facility(LogMessage *msg, const guint32 facility)
 }
 
 static void
-log_rewrite_set_facility_process(LogRewrite *s, LogMessage **pmsg, const LogPathOptions *path_options)
+log_rewrite_set_facility_process(LogRewrite *s, LogMessage **pmsg, LogPathOptions *path_options)
 {
   ScratchBuffersMarker marker;
   GString *result = scratch_buffers_alloc_and_mark(&marker);

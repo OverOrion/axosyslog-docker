@@ -28,7 +28,7 @@
 static Debugger *current_debugger;
 
 static gboolean
-_pipe_hook(LogPipe *s, LogMessage *msg, const LogPathOptions *path_options)
+_pipe_hook(LogPipe *s, LogMessage *msg, LogPathOptions *path_options)
 {
   if ((s->flags & PIF_CONFIG_RELATED) == 0)
     return TRUE;

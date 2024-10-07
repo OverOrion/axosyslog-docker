@@ -46,7 +46,7 @@ log_rewrite_set_get_template_options(LogRewrite *s)
 }
 
 static void
-log_rewrite_set_process(LogRewrite *s, LogMessage **pmsg, const LogPathOptions *path_options)
+log_rewrite_set_process(LogRewrite *s, LogMessage **pmsg, LogPathOptions *path_options)
 {
   LogRewriteSet *self = (LogRewriteSet *) s;
   GString *result;

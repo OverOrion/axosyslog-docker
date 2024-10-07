@@ -76,7 +76,7 @@ _has_multiple_arcs(LogMultiplexer *self)
 }
 
 static void
-log_multiplexer_queue(LogPipe *s, LogMessage *msg, const LogPathOptions *path_options)
+log_multiplexer_queue(LogPipe *s, LogMessage *msg, LogPathOptions *path_options)
 {
   LogMultiplexer *self = (LogMultiplexer *) s;
   gint i;
@@ -93,7 +93,7 @@ log_multiplexer_queue(LogPipe *s, LogMessage *msg, const LogPathOptions *path_op
        * write protected so that changes in those branches don't overwrite
        * data we still need */
 
-      filterx_eval_prepare_for_fork(path_options->filterx_context, &msg, path_options);
+      filterx_eval_prepare_for_fork(&path_options->filterx_context, &msg, path_options);
       log_msg_write_protect(msg);
     }
   for (fallback = 0; (fallback == 0) || (fallback == 1 && self->fallback_exists && !delivered); fallback++)

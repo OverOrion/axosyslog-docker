@@ -34,7 +34,7 @@ struct _LogRewriteRename
 };
 
 static void
-log_rewrite_rename_process(LogRewrite *s, LogMessage **pmsg, const LogPathOptions *path_options)
+log_rewrite_rename_process(LogRewrite *s, LogMessage **pmsg, LogPathOptions *path_options)
 {
   LogRewriteRename *self = (LogRewriteRename *) s;
 

@@ -452,9 +452,13 @@ log_pipe_forward_msg(LogPipe *self, LogMessage *msg, LogPathOptions *path_option
 static inline void
 log_pipe_queue(LogPipe *s, LogMessage *msg, LogPathOptions *path_options)
 {
+    g_assert((s->flags & PIF_INITIALIZED) != 0);
+
+    if ((s->flags & PIF_SYNC_FILTERX))
+    filterx_eval_sync_message(&path_options->filterx_context, &msg, path_options);
+
   LogPathOptions local_path_options;
   log_path_options_init(&local_path_options);
-  g_assert((s->flags & PIF_INITIALIZED) != 0);
   path_options = log_path_options_chain(&local_path_options, path_options);
 
   if (G_UNLIKELY(pipe_single_step_hook))
@@ -465,9 +469,6 @@ log_pipe_queue(LogPipe *s, LogMessage *msg, LogPathOptions *path_options)
           return;
         }
     }
-
-  if ((s->flags & PIF_SYNC_FILTERX))
-    filterx_eval_sync_message(&path_options->filterx_context, &msg, path_options);
 
   if (G_UNLIKELY(s->flags & (PIF_HARD_FLOW_CONTROL | PIF_JUNCTION_END | PIF_CONDITIONAL_MIDPOINT)))
     {
@@ -481,7 +482,7 @@ log_pipe_queue(LogPipe *s, LogMessage *msg, LogPathOptions *path_options)
           log_path_options_pop_junction(&local_path_options);
         }
       if (s->flags & PIF_CONDITIONAL_MIDPOINT)
-        {
+        { 
           log_path_options_pop_conditional(&local_path_options);
         }
     }

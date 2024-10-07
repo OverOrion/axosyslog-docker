@@ -170,8 +170,9 @@ filterx_scope_lookup_variable(FilterXScope *self, FilterXVariableHandle handle)
 
   if (_lookup_variable(self, handle, &v))
     {
-      if (filterx_variable_handle_is_floating(handle) &&
-          !v->declared && v->generation != self->generation)
+      gboolean same_gen = v->generation == self->generation;
+      //gboolean is_floating = filterx_variable_handle_is_floating(handle);
+      if (!v->declared && !same_gen)
         return NULL;
       return v;
     }

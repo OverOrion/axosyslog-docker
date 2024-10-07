@@ -75,17 +75,20 @@ void filterx_eval_store_weak_ref(FilterXObject *object);
 void filterx_eval_init_context(FilterXEvalContext *context, FilterXEvalContext *previous_context);
 void filterx_eval_deinit_context(FilterXEvalContext *context);
 
-static inline void
+static inline gboolean
 filterx_eval_sync_message(FilterXEvalContext *context, LogMessage **pmsg, LogPathOptions *path_options)
 {
-  if (!context)
-    return;
+  g_assert(context);
+  //if (!context)
+    //return FALSE;
 
-  if (!filterx_scope_is_dirty(context->scope))
-    return;
+  //g_assert(!filterx_scope_is_dirty(context->scope));
+  //if (!filterx_scope_is_dirty(context->scope))
+    //return FALSE;
 
-  log_msg_make_writable(pmsg, path_options);
+  //log_msg_make_writable(pmsg, path_options);
   filterx_scope_sync(context->scope, *pmsg);
+  return TRUE;
 }
 
 static inline void

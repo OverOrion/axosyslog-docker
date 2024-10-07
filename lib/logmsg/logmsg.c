@@ -315,7 +315,10 @@ log_msg_write_protect(LogMessage *self)
 LogMessage *
 log_msg_make_writable(LogMessage **pself, LogPathOptions *path_options)
 {
-  filterx_eval_sync_message(&path_options->filterx_context, pself, path_options);
+  //gboolean res = filterx_eval_sync_message(&path_options->filterx_context, pself, path_options);
+  //g_assert(res);
+  path_options->filterx_context.scope = filterx_scope_make_writable(&path_options->filterx_context.scope);
+  filterx_scope_set_dirty(path_options->filterx_context.scope);
   if (log_msg_is_write_protected(*pself))
     {
       LogMessage *new;
